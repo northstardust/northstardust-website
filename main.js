@@ -15,7 +15,17 @@
   var reducedMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- 1. Reveal-on-scroll ---------- */
+  /* ---------- 1. Reveal-on-scroll ----------
+     Content already visible in the viewport on initial load skips its own
+     fade entirely — it's shown instantly instead. Without this, a reveal
+     target that's already on screen (e.g. the Founder card, or the whole
+     of the short Publishing page) fires its IntersectionObserver almost
+     immediately, running its own .75s fade at the same time as the outer
+     page-transition's .32s fade on <main>. Since one is nested inside the
+     other, their opacity values multiply, producing a slower, uneven
+     "double fade" instead of one clean entrance. The page-transition alone
+     now owns the initial entrance; .reveal is reserved for content that
+     scrolls into view later, which is unaffected by any of this. */
   (function reveal() {
     var targets = document.querySelectorAll('.reveal');
     if (!targets.length) return;
@@ -25,6 +35,24 @@
       return;
     }
 
+    var toObserve = [];
+    var vh = window.innerHeight;
+
+    targets.forEach(function (el) {
+      var rect = el.getBoundingClientRect();
+      // Mirrors the observer's own rootMargin/threshold below: already
+      // (or almost) on screen at load time.
+      var alreadyVisible = rect.top < vh * 0.92 && rect.bottom > 0;
+      if (alreadyVisible) {
+        el.style.transition = 'none';
+        el.classList.add('is-in');
+      } else {
+        toObserve.push(el);
+      }
+    });
+
+    if (!toObserve.length) return;
+
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
@@ -33,7 +61,7 @@
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
 
-    targets.forEach(function (el) { observer.observe(el); });
+    toObserve.forEach(function (el) { observer.observe(el); });
   })();
 
   /* ---------- 2. Page transitions ----------
