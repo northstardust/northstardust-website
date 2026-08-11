@@ -5,8 +5,9 @@
      1. Reveal-on-scroll
      2. Page transitions (slide in/out) + "always show the top" on navigate
      3. Content sync from assets/Website Texts.md
-     4. Stardust cursor trail
-     5. Contact form validation + /api/contact submission
+     4. Founder role width match (letter-spacing solved to fit the name)
+     5. Stardust cursor trail
+     6. Contact form validation + /api/contact submission
    All motion respects prefers-reduced-motion. */
 (function () {
   'use strict';
@@ -167,7 +168,75 @@
     }
   })();
 
-  /* ---------- 4. Stardust cursor trail ----------
+  /* ---------- 4. Founder role width match ----------
+     Website.txt: the role line's letter-spacing should "fit exactly the
+     size of length of the name" above it. Letter-spacing is measured and
+     solved for at runtime (fonts must be loaded first) rather than fixed
+     in CSS, since the target width changes with viewport/font size. Falls
+     back to the CSS default (--ls-wider, 18%) if measurement is ever
+     unusable — e.g. before fonts load, or a width that would compress or
+     overlap letters.
+
+     Both elements are block-level (h2, p) inside a flex column, so their
+     own getBoundingClientRect().width is the width of that column, not
+     of the text inside it — measuring that way always "matched" trivially
+     without the visible text actually lining up. Range.getBoundingClientRect()
+     on the text node gives the true rendered glyph-run width instead. */
+  (function matchFounderRoleWidth() {
+    var name = document.querySelector('.founder__card h2');
+    var role = document.querySelector('.founder__role');
+    if (!name || !role) return;
+
+    function textWidth(el) {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      return range.getBoundingClientRect().width;
+    }
+
+    function apply() {
+      role.style.letterSpacing = '0px';
+      var naturalWidth = textWidth(role);
+      var targetWidth = textWidth(name);
+      var charCount = role.textContent.length;
+      if (!charCount || !naturalWidth || !targetWidth) { role.style.letterSpacing = ''; return; }
+
+      var spacing = (targetWidth - naturalWidth) / charCount;
+      var minSpacing = parseFloat(getComputedStyle(role).fontSize) * 0.02;
+      if (!isFinite(spacing) || spacing < minSpacing) {
+        role.style.letterSpacing = '';
+        return;
+      }
+      role.style.letterSpacing = spacing + 'px';
+
+      // One correction pass: the linear estimate is very close but rounding
+      // and sub-pixel kerning can leave a fraction of a pixel of error:
+      // nudge once more against the now-actual rendered width.
+      var resultWidth = textWidth(role);
+      var residual = targetWidth - resultWidth;
+      if (Math.abs(residual) > 0.5) {
+        spacing += residual / charCount;
+        if (isFinite(spacing) && spacing >= minSpacing) {
+          role.style.letterSpacing = spacing + 'px';
+        }
+      }
+    }
+
+    function run() { requestAnimationFrame(apply); }
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(run);
+    } else {
+      run();
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(run, 150);
+    });
+  })();
+
+  /* ---------- 5. Stardust cursor trail ----------
      Fine-pointer devices only (real touch surfaces have no hover cursor to
      trail), and never under reduced motion. Capped particle count and a
      spawn throttle keep it cheap: opacity + transform only, no layout. */
@@ -235,7 +304,7 @@
     });
   })();
 
-  /* ---------- 5. Contact form ---------- */
+  /* ---------- 6. Contact form ---------- */
   (function contactForm() {
     var form = document.getElementById('contact-form');
     if (!form) return;

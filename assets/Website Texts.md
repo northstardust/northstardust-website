@@ -6,11 +6,9 @@ Home Page
 
 North Stardust is an independent creative studio and a home for original Intellectual Property. It is built around the belief that good creative work needs both freedom and direction.
 
-An idea is treated as raw material. It can be explored, tested, refined and given structure without losing the curiosity that made it worth pursuing. The studio values thoughtful making over constant output, and lasting value over quick results.
+An idea is treated as raw material. It can be explored, tested, refined and given structure without losing the curiosity that made it worth pursuing. Thoughtful making matters more than constant output, and lasting value matters more than quick results.
 
-Its work can take many forms, from a useful digital tool or publication to an original character, story or world. Each begins with an idea and develops according to what it can become, guided by curiosity, purpose and a long-term view.
-
-The North Star is not the destination. It is a point of reference that helps keep the work moving in the right direction.
+The work can take many forms, from a useful digital tool or publication to an original character, story or world. Each begins with an idea and develops according to its potential, with curiosity, purpose and care guiding the process.
 
 ---
 
@@ -18,9 +16,7 @@ The North Star is not the destination. It is a point of reference that helps kee
 
 To give curiosity a purpose and imagination a form.
 
-The purpose is to explore ideas, shape them with intention and discover what they can become. A thought may grow into a useful tool, a resource, a creative work or the beginning of something larger.
-
-The aim is to give promising ideas the space, structure and care they need to become meaningful and lasting work.
+The work begins by exploring ideas, shaping them with intention and discovering their potential. Promising ideas are given the space, structure and care needed to become useful, meaningful and lasting work.
 
 ---
 
