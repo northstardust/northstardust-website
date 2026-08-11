@@ -1,225 +1,182 @@
-# North Stardust — Website V1
+# North Stardust — Website
 
-A single-page static site. No framework, no build step, no dependencies.
+A static, multi-page site. No framework, no build step, no dependencies.
 Edit the files, commit, push — that's the whole workflow.
 
+Built against three specification documents in the project root:
+`North_Stardust_Website_Development_Prompt.md`, `Website.txt`, and
+`North_Stardust_Claude_Final_Clarifications.md`. The previous single-page V1
+build is documented (for history only) in `north-stardust-website-v1-spec.md`.
+
 ---
+
+## Pages
+
+```
+index.html        Home       — hero + The Studio / The Compass / The Horizon
+contact.html       Contact    — Founder section + contact form
+publishing.html    Publishing — "Coming soon…"
+```
+
+Header and footer markup is duplicated at the top/bottom of each page (no
+templating layer exists in a build-free static site — this is the standard
+trade-off). If you change the header or footer, change it in all three
+files.
 
 ## Files
 
 ```
-index.html      the entire site
-styles.css      one stylesheet (design tokens at the top, in :root)
-main.js         ~20 lines: one subtle scroll reveal. The site works without it.
-robots.txt
-sitemap.xml
-favicon.ico
+index.html · contact.html · publishing.html
+styles.css        design tokens + every rule, in one file
+main.js           reveal-on-scroll, page transitions, content sync,
+                   stardust cursor trail, contact form validation/submit
+functions/api/contact.js   Cloudflare Pages Function — POST /api/contact
+robots.txt · sitemap.xml · favicon.ico
 assets/
-  fonts/        Cormorant 300, Spectral 300/400, Inter 400/500/600 (woff2)
-  img/
-    lockup-peach.svg    hero lockup — "Single Line Light Peach"
-    wordmark-light.svg  header wordmark — "Wordmark Light Single Line"
-    star.svg            mobile header mark + footer mark — "Icon M-256"
-    guide-cover.*       publication cover (WebP + JPEG)
-    founder.*           founder portrait (WebP + JPEG)
-    favicon-32.png · apple-touch-icon.png · logo.png · og-image.jpg
+  fonts/          Cormorant 400, Spectral 400, Inter 400/500/600 (woff2)
+  img/            logo-double-line.svg, wordmark-light.svg, star.svg,
+                   founder-rounded.png, Stars.png, favicons, og-image.jpg
+  Website Texts.md   editable long-form copy (see "Content" below)
+assets-source/    master/original brand files — not referenced by the site
 ```
-
-All four SVGs are the supplied files from `assets-source`, unmodified apart
-from running SVGO (whitespace and metadata removal — no path or colour
-changes). The favicons, `logo.png` and the OG image are generated *from*
-`star.svg` and `lockup-peach.svg` rather than drawn by hand.
-
-**One note on the source folder:** `NORTH STARDUST Stamp dark.svg` is
-actually a PNG file with an `.svg` extension — worth renaming in your asset
-library. It is not used here; the footer uses the vector `Icon M-256`.
-
-## Editing
-
-**Text** — all copy lives in `index.html`. Search for the section comment
-(`<!-- ── Founder ── -->`) and edit in place.
-
-**Colours, spacing, type sizes** — change the custom properties in `:root`
-at the top of `styles.css`. Nothing else hard-codes a brand colour.
-
-**Type scale — four display steps, one body step, two interface steps.**
-Defined once in `:root` as `--fs-d1` … `--fs-d4`, `--fs-body`, `--fs-small`,
-`--fs-eyebrow`. Nothing else may introduce a size; every rule references a
-token. (300 and 400 are *weights*, not steps.)
-
-Five sizes, and only five. Desktop values (from ~1200px up):
-
-| Token | Size | Used by |
-|---|---|---|
-| `--fs-h1` | **64px** | the statement band |
-| `--fs-h2` | **44px** | Studio and Contact headings |
-| `--fs-h3` | **28px** | Founder and Looking Ahead headings, hero line, Direction text, contact email |
-| `--fs-body` | **20px** | every paragraph |
-| `--fs-small` | **14px** | nav, labels, link rows, metadata, legal |
-
-Each clamp scales down below ~1200px so nothing overflows on small screens;
-`--fs-d1`…`--fs-d4` remain as aliases onto these five steps.
-
-**Measures.** Every block is set to read as few, balanced lines on desktop:
-hero 3, Studio heading 3, Studio and Founder paragraphs 2–3, Direction 3,
-Contact 3. Adjust the `ch` values on each block, not the type sizes.
-
-**Wide viewports.** `--shell`, `--rail`, `--gutter` and `--section-y` step up
-at 1500px and again at 1900px, all bounded. The layout keeps scaling past a
-laptop instead of freezing a 1200px column in the middle of a large monitor;
-nothing stretches without a cap.
-
-**Seamless bands.** There are no horizontal borders anywhere between
-sections. Where the tone changes (Founder, Direction, Contact) it is a
-`linear-gradient` resolving over the top ~14vh of the section, so the step is
-felt rather than seen. The footer shares Contact's tone and is separated by
-space alone.
-
-**The statement band glow is deliberately not clipped.** Its `__glow` div is
-200% of the section height and the section does **not** hide overflow, so the
-glow bleeds into the identical midnight above and below — there is no box
-edge for a seam to appear at. Clipping it (either by `overflow:hidden` or by
-painting the radial on the section background) is what produced the visible
-cut line. Horizontal width is capped at `100vw` so it never creates scroll.
-
-**The sticky header is opaque**, with a 2.75rem gradient strip beneath it
-(`.masthead::after`) painted in the page background. Text scrolling under the
-bar fades out rather than being sliced mid-glyph, and `scroll-padding-top` is
-7rem so anchor targets clear both.
-
-**The wordmark** is an inline `<symbol id="ns-wordmark">` at the top of
-`<body>`, referenced by `<use>` in the header and footer. Its path is
-`fill="currentColor"`, so the header link transitions cream → gold on hover
-and focus like any other link — no CSS filters, no duplicate gold asset.
-
-**The Studio heading** carries two `<br class="brk">` hints, suppressed below
-1200px. Above that it sets as three lines; below, it wraps naturally. The
-originally requested split ("…and home for original Intellectual Property."
-as one line) needs a 1015px measure at the approved display size, and the
-widest column the layout allows is 892px — so the break points were chosen
-to give three even lines at full size rather than shrinking the type.
-
-**Typography — three families, three jobs, no overlap.**
-
-| Family | Job | Where |
-|---|---|---|
-| Cormorant Garamond 300 | brand only | the statement band, and nowhere else |
-| Spectral 300 / 400 | the studio's voice | headings, hero line, body, Direction, Contact, Founder |
-| Inter 400/500/600 | the interface | nav, section labels, metadata, link rows, legal |
-
-Spectral replaced Cormorant as the reading face because Cormorant is a
-high-contrast *display* type: light-on-dark optically thins its hairlines,
-and it was showing badly at mid display sizes. Spectral was drawn for
-on-screen reading and holds its stems on midnight at every size here.
-Cormorant survives in exactly one place — the statement band — because it
-is the wordmark's face, so that setting echoes the logo.
-
-Spectral has a much larger x-height than Cormorant, so the whole display
-ladder in `:root` sits about 12% lower than before. If you ever swap the
-serif, re-check those numbers; they are tuned to this face.
-
-**To restore the Published Work section** when the Guide ships, follow the
-three steps in the comment block in `index.html` (search for
-`PUBLISHED WORK — hidden`). Step 3 needs this node added back to the
-JSON-LD `@graph`:
-
-```json
-{
-  "@type": "Book",
-  "name": "Practical Guide to Autodesk Navisworks",
-  "author": { "@id": "https://northstardust.studio/#founder" },
-  "publisher": { "@id": "https://northstardust.studio/#organization" },
-  "bookEdition": "First Edition",
-  "inLanguage": "en-GB",
-  "datePublished": "2026",
-  "image": "https://northstardust.studio/assets/img/guide-cover.jpg",
-  "about": "BIM coordination, clash detection, and 4D and 5D workflows in Autodesk Navisworks."
-}
-```
-
-The `.section--light` / `.work` / `.status` / `.meta` styles and the
-`guide-cover` images are all still present and untouched.
-
-**Adding a further work entry** — duplicate the `<article class="work">`
-block. Keep all six fields (title, type, status, description, year,
-publisher) so entries stay consistent as the list grows. The status label
-vocabulary is deliberately closed: `Published` and `In development`.
-
-**Links** — the studio's link lives in Contact, the founder's in the Founder
-section. They share the `.linkrow` treatment; `.linkrow--founder` renders one
-step quieter. Every link carries an explicit `aria-label` naming its owner,
-so "LinkedIn" is never ambiguous to a screen reader.
 
 ## Running it locally
 
-Double-click `index.html` — asset paths are relative, so it opens straight
-from disk. For an exact match to production:
+Because `main.js` fetches `assets/Website Texts.md` at runtime (see
+"Content" below) and the contact form posts to `/api/contact`, opening
+`index.html` straight from disk (`file://`) will render and work, but the
+copy-sync and the form submission both silently no-op — that's expected,
+not a bug. For a working local check of everything:
+
+```bash
+npx serve .            # or: python3 -m http.server 8000
+```
+
+## Deploying — Cloudflare Pages
+
+The domain `northstardust.studio` is already active in Cloudflare with SSL.
+There is no `wrangler.toml` or Workers-specific config in this repo, and the
+project has always targeted Cloudflare **Pages** (build command: none,
+output directory: `/`) — so `functions/api/contact.js` is a **Pages
+Function**: Cloudflare maps `functions/api/contact.js` to `POST
+/api/contact` automatically on deploy, no router or extra config needed.
+
+**Required environment variables** (Cloudflare Pages dashboard → Settings →
+Environment variables — never commit these, never reference them from
+client-side code):
+
+| Variable | Example | Notes |
+|---|---|---|
+| `RESEND_API_KEY` | *(secret)* | API key from [resend.com](https://resend.com) |
+| `CONTACT_FROM_EMAIL` | `contact@northstardust.studio` | must be a Resend-verified sending domain |
+| `CONTACT_TO_EMAIL` | `northstardust.studio@gmail.com` | where messages land |
+
+Until those three are set, `/api/contact` responds `503` with a message
+pointing visitors to the studio's email directly — the form's own error
+state surfaces that honestly rather than pretending to succeed.
+
+If this project is ever moved from Pages to a standalone Worker, the logic
+in `functions/api/contact.js` moves into a `fetch()` handler essentially
+unchanged — only the export shape (`onRequestPost` → `fetch`) differs.
+
+## Content
+
+Long-form copy — The Studio / The Compass / The Horizon on Home, and the
+Founder bio and "Let's Connect" text on Contact — lives in
+`assets/Website Texts.md`, not duplicated in the HTML by hand.
+
+Each HTML page ships with that same copy already inlined (so the page has
+real content on first paint, works with JavaScript disabled, and is fully
+crawlable — none of that depends on a fetch succeeding). When the page is
+served over http(s) and `main.js` runs, it re-fetches
+`assets/Website Texts.md`, parses it by its `## Heading` structure, and
+replaces the matching containers' `<p>` text if the fetch succeeds. Edit the
+`.md` file and the live site picks it up on next load — no HTML edit
+required. If the fetch fails (opened from disk, offline, blocked), the
+inlined copy simply stays as-is.
+
+**Keep the HTML and the `.md` file in sync by hand for now.** There's no
+build step to enforce it; if you change the copy, update both.
+
+## Design tokens
+
+Colours, type scale and spacing are custom properties at the top of
+`styles.css` (`:root`). Nothing else hard-codes a brand value.
 
 ```
-python3 -m http.server 8000     # then visit http://localhost:8000
+Gold Dark    #BF9440       Midnight   #0F172A
+Gold Light   #F2D68A       Light Peach #F0E5DC
+                            Ivory      #F1EDE7
 ```
 
-## Deploying
+Type scale (desktop, ≥1200px — the Prompt/Website.txt targets):
+`--fs-h1` 64px · `--fs-h2` 48px · `--fs-h3` 24px · `--fs-body` 20px ·
+`--fs-link` 16px · `--fs-small` 14px. Every rule references one of these
+tokens; nothing introduces a new size.
 
-Recommended: **Cloudflare Pages**, connected to this repository.
+**Glass card** (Figma-confirmed, `North_Stardust_Claude_Final_Clarifications.md` §5):
+Gold Light fill at 5% opacity, 20px backdrop blur, 30px radius, 20px
+padding, **no stroke**. One shared `.glass` class.
 
-- Build command: *(none)*
-- Build output directory: `/`
-- Custom domain: `northstardust.studio`
+## Known approximations — please confirm
 
-Every push to `main` publishes. GitHub Pages works identically if preferred.
+A few spec values had no exact match available in the project and were
+approximated rather than invented. All are isolated to a single place, so
+fixing them later is a small edit:
 
-**Before going live**, decide the canonical host — `northstardust.studio`
-or `www.northstardust.studio` — and permanently redirect the other. The
-chosen form is already written into `index.html` (canonical tag, Open Graph
-`og:url`, JSON-LD) and `sitemap.xml` as the apex domain. If you choose
-`www`, update those four places.
+1. **The "light blue" filled-field colour** (`Website.txt` and the Prompt,
+   §11) is named but never given a hex value, and no reference image with
+   the exact value was supplied. Provisional value: `--field-filled:
+   #AFD8E8` in `styles.css`. Swap that one token once the real value is
+   confirmed.
+2. **Font weights.** The spec calls for Cormorant Garamond *Medium*,
+   Spectral *Medium*/*SemiBold*, but only Cormorant 300/400 and Spectral
+   300/400 woff2 files exist in `assets/fonts/`. Weight 400 (the heaviest
+   available for each) is used throughout as the closest match; weight 300
+   is no longer used anywhere and its `@font-face` rules were removed. If
+   true Medium/SemiBold cuts of Cormorant Garamond and Spectral are added to
+   `assets/fonts/`, update the `@font-face` blocks and the `font-weight`
+   values in `styles.css` (search `font-weight:400` under the type-scale
+   comment).
+3. **Reference screenshots** (`Header.png`, `Footer.png`, `Founder.png`,
+   `Contact.png`, `Desktop Home Page.png`, etc.) named throughout the Prompt
+   document were not physically present in the project or supplied as
+   attachments — layout was built from the explicit pixel/typography values
+   in `Website.txt` and the Prompt instead, which fully specify every
+   dimension used. Worth a visual diff against the originals if they turn
+   up later.
+4. **Founder role letter-spacing** ("18% letter spacing… to fit exactly the
+   size of length of the name") is implemented as a fixed `0.18em`
+   letter-spacing, not a JS-computed width match to the name above it — the
+   literal auto-fit behaviour wasn't otherwise required anywhere else in the
+   brief and isn't worth the added script for a decorative detail.
+5. **Error-state red** (`--field-error` in `styles.css`) isn't in the brand
+   palette — spec never names one for form validation errors. Used a
+   standard accessible red; low-risk since error colour is a UX convention,
+   not a brand decision.
+
+## Accessibility
+
+- Semantic landmarks, one `h1` per page, logical heading order.
+- All form fields have a real (visually-hidden) `<label>` even though the
+  visual design is placeholder-only — a placeholder is not an accessible
+  name.
+- Errors are wired with `aria-invalid` and `aria-describedby` pointing at a
+  `role="alert"` message, not colour alone.
+- Every animation (starfield drift/twinkle, cursor stardust trail, reveal-
+  on-scroll, page slide transitions, hover scale) is disabled under
+  `prefers-reduced-motion`. The cursor trail additionally only runs on
+  fine-pointer (mouse) devices — it never attaches on touch.
+- Page transitions are progressive enhancement: with JavaScript off, links
+  are plain anchors and navigate instantly and correctly.
+- Tested with Playwright at 1440/1024/768/375px: no console errors, no
+  failed asset requests, no horizontal overflow at any width.
 
 ## Maintenance
 
-There are no dependencies to patch — that is the point of the plain-HTML
-approach. The only recurring jobs:
-
 | Task | When |
 |---|---|
-| Update work entries / statuses | As the work changes |
+| Update copy | Edit `assets/Website Texts.md` **and** the matching HTML paragraphs |
 | Confirm domain auto-renew | Annually |
 | Check outbound links resolve | Annually |
-
-## Accessibility notes
-
-Verified by static review and automated checks in a headless browser,
-against WCAG 2.2 AA:
-
-| Criterion | Result |
-|---|---|
-| 1.4.3 Contrast (minimum) | pass — 37 text nodes sampled, lowest ratio **5.00:1** |
-| 1.4.4 Resize text | pass — no horizontal scrolling at 150% or 200% text-only zoom |
-| 1.4.10 Reflow | pass — no horizontal scrolling at 320 CSS px |
-| 1.4.12 Text spacing | pass — with the 1.5×/2×/0.12em/0.16em override applied, nothing clips or overflows |
-| 2.4.7 Focus visible | pass — gold ring on all nine focusable elements |
-| 2.4.11 Focus not obscured | pass — sticky header cleared via `scroll-padding-top`; skip link sits above it (z-index 100 vs 50) |
-| 2.5.8 Target size (minimum) | pass — every interactive target ≥ 44px, well above the 24px minimum |
-
-Also: semantic landmarks, one `h1`, logical heading order, alt text on every
-image, all three navigation links reachable from 320px upward with no
-overlap, no console or request errors, works with JavaScript disabled and
-under `prefers-reduced-motion`.
-
-Two notes on how the zoom cases are held:
-
-- Grid children carry `min-width:0`, so a non-breaking token (like
-  "Intellectual&nbsp;Property.") cannot size a whole track and force
-  horizontal scrolling when text is enlarged on its own.
-- The descriptor terms are held together by `&nbsp;` in the markup rather
-  than `white-space:nowrap`. Identical result at every normal size, but
-  unlike `nowrap` it can still be broken by `overflow-wrap` when a term is
-  too large to fit at all.
-
-Not yet done: screen-reader and real-device testing.
-
-One deliberate palette addition: `--gold-ink` (`#8A6420`) is a darkened
-shade of the brand gold, used **only** on the ivory Published Work section.
-The brand gold `#BF9440` reaches just 2.39:1 on ivory and cannot carry text
-there; `#8A6420` reaches 4.59:1. On midnight, the brand golds are used
-unchanged.
+| Rotate `RESEND_API_KEY` | Per Resend's own guidance |

@@ -1,5 +1,13 @@
 # North Stardust — Website V1 Specification
 
+> **Superseded.** This document describes the single-page V1 build (dark
+> editorial, anchor navigation, no starfield/glass system). The site was
+> rebuilt as a 3-page site (`index.html`, `contact.html`, `publishing.html`)
+> against `North_Stardust_Website_Development_Prompt.md`, `Website.txt` and
+> `North_Stardust_Claude_Final_Clarifications.md` — see the current
+> [README.md](README.md). Kept here as a historical record only; nothing in
+> this file reflects what's currently deployed.
+
 **Revision 6 — as built.** Supersedes Revisions 1–5.
 
 ## Changes in Revision 6
