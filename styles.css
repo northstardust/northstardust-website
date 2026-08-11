@@ -158,7 +158,7 @@ a,button,.btn,.text-link,[role="button"]{cursor:pointer}
    Global background — one reusable layered component,
    duplicated at the top of <body> on every page.
    1. flat midnight base
-   2. Stars.png, drifting very slowly, with a soft twinkle overlay
+   2. Stars.avif, drifting very slowly, with a soft twinkle overlay
    3. top/bottom 200px gradient bands so content never meets a hard edge
    Respects prefers-reduced-motion: motion stops, the field stays put.
    ========================================================== */
@@ -173,7 +173,7 @@ a,button,.btn,.text-link,[role="button"]{cursor:pointer}
 .page-bg__stars{
   position:absolute;
   inset:-8%;
-  background-image:url('assets/img/Stars.png');
+  background-image:url('assets/img/Stars.avif');
   background-repeat:repeat;
   background-size:1200px auto;
   opacity:.85;
