@@ -124,11 +124,8 @@ A few spec values had no exact match available in the project and were
 approximated rather than invented. All are isolated to a single place, so
 fixing them later is a small edit:
 
-1. **The "light blue" filled-field colour** (`Website.txt` and the Prompt,
-   §11) is named but never given a hex value, and no reference image with
-   the exact value was supplied. Provisional value: `--field-filled:
-   #AFD8E8` in `styles.css`. Swap that one token once the real value is
-   confirmed.
+1. ~~**The "light blue" filled-field colour**~~ — resolved. `--field-filled`
+   in `styles.css` is now the confirmed value `#397EE6`.
 2. **Font weights.** The spec calls for Cormorant Garamond *Medium*,
    Spectral *Medium*/*SemiBold*, but only Cormorant 300/400 and Spectral
    300/400 woff2 files exist in `assets/fonts/`. Weight 400 (the heaviest

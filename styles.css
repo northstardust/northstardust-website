@@ -29,12 +29,8 @@
   --peach:#F0E5DC;
   --ivory:#F1EDE7;
 
-  /* Field "filled" colour: the spec (Website.txt, Prompt.md §11) calls for a
-     "light blue" filled/entered state but never supplies a hex value, and no
-     such colour exists in the five-value palette above. No reference image
-     with the exact value was available either. This is a provisional value —
-     swap it here once the real one is confirmed. See README. */
-  --field-filled:#AFD8E8;
+  /* Field "filled" colour: confirmed/approved value. */
+  --field-filled:#397EE6;
   --field-error:#F2837A;
 
   --ink:var(--ivory);
@@ -47,12 +43,18 @@
   --font-serif:'Spectral',Georgia,'Times New Roman',serif;
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
 
-  --fs-h1:clamp(2.25rem,1.1rem + 3.6vw,4rem);       /* 64px */
-  --fs-h2:clamp(1.75rem,1.2rem + 2.1vw,3rem);        /* 48px */
-  --fs-h3:clamp(1.2rem,1.05rem + .6vw,1.5rem);       /* 24px */
-  --fs-body:clamp(1.05rem,1rem + .2vw,1.25rem);      /* 20px */
-  --fs-link:clamp(.95rem,.9rem + .15vw,1rem);        /* 16px */
-  --fs-small:.875rem;                                 /* 14px */
+  /* Each ramps linearly and lands on its exact px target at exactly
+     1200px viewport width — Website.txt states the page/content width as
+     a flat 1200px, not a "starts at 1200 and keeps growing" fluid system,
+     so every clamp() is solved to reach TARGET precisely at 1200px and
+     hold flat above it (the max branch), with the stated min as the floor
+     below it. */
+  --fs-h1:clamp(2.25rem,1.3rem + 3.6vw,4rem);         /* 64px at 1200px */
+  --fs-h2:clamp(1.75rem,1.425rem + 2.1vw,3rem);       /* 48px at 1200px */
+  --fs-h3:clamp(1.2rem,1.05rem + .6vw,1.5rem);        /* 24px at 1200px */
+  --fs-body:clamp(1.05rem,1.1rem + .2vw,1.25rem);     /* 20px at 1200px */
+  --fs-link:clamp(.95rem,.8875rem + .15vw,1rem);      /* 16px at 1200px */
+  --fs-small:.875rem;                                  /* 14px */
 
   --ls-wide:.1em;    /* 10% letter-spacing — links, buttons, form labels */
   --ls-wider:.18em;  /* 18% — founder role line */
@@ -101,8 +103,15 @@ body{
   min-height:100vh;
   display:flex;
   flex-direction:column;
+  cursor:default;
 }
 main{flex:1 0 auto}
+
+/* Plain body copy is not editable, so it keeps the default arrow cursor
+   (set on body above) rather than the browser's native text I-beam.
+   Actual editable/clickable elements get their proper cursor back. */
+.field input,.field textarea{cursor:text}
+a,button,.btn,.text-link,[role="button"]{cursor:pointer}
 
 /* ---------- Utilities ---------- */
 .shell{
@@ -156,6 +165,14 @@ main{flex:1 0 auto}
   animation:starDrift 300s ease-in-out infinite alternate;
   will-change:transform;
 }
+/* Asynchronous twinkle: two overlay copies of the same star field, each
+   offset in position and each pulsing opacity on its own uncoupled
+   duration/delay. Because the three layers (base + two overlays) are
+   spatially offset, their peaks brighten different stars at different
+   moments — it reads as scattered, natural scintillation rather than the
+   whole sky pulsing in unison, while staying pure CSS opacity animation
+   (cheap, no canvas, no per-star markup). */
+.page-bg__stars::before,
 .page-bg__stars::after{
   content:'';
   position:absolute;
@@ -164,8 +181,18 @@ main{flex:1 0 auto}
   background-repeat:inherit;
   background-size:inherit;
   mix-blend-mode:screen;
+  pointer-events:none;
+}
+.page-bg__stars::before{
+  background-position:57px 31px;
+  opacity:.22;
+  animation:starTwinkleA 6.4s ease-in-out infinite alternate;
+}
+.page-bg__stars::after{
+  background-position:-83px 64px;
   opacity:.3;
-  animation:starTwinkle 7s ease-in-out infinite alternate;
+  animation:starTwinkleB 8.7s ease-in-out infinite alternate;
+  animation-delay:-2.6s;
 }
 .page-bg__band{position:absolute;left:0;right:0;height:200px;pointer-events:none}
 .page-bg__band--top{
@@ -177,9 +204,10 @@ main{flex:1 0 auto}
   background:linear-gradient(to top,var(--midnight) 0%,rgba(15,23,42,.75) 50%,rgba(15,23,42,0) 100%);
 }
 @keyframes starDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3%,-2.5%,0)}}
-@keyframes starTwinkle{from{opacity:.14}to{opacity:.4}}
+@keyframes starTwinkleA{from{opacity:.1}to{opacity:.38}}
+@keyframes starTwinkleB{from{opacity:.4}to{opacity:.14}}
 @media (prefers-reduced-motion:reduce){
-  .page-bg__stars,.page-bg__stars::after{animation:none}
+  .page-bg__stars,.page-bg__stars::before,.page-bg__stars::after{animation:none}
 }
 
 /* Cursor stardust trail — canvas overlay, painted by main.js.
@@ -198,6 +226,7 @@ main{flex:1 0 auto}
   color:var(--midnight);
   font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
   letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
   text-decoration:none;
   transition:background-color .2s ease;
   cursor:pointer;
@@ -209,6 +238,7 @@ main{flex:1 0 auto}
   color:var(--peach);
   font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
   letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
   text-decoration:none;
   transition:color .2s ease,transform .2s ease;
 }
@@ -216,6 +246,14 @@ main{flex:1 0 auto}
   color:var(--gold-light);
   text-decoration:underline;
   transform:scale(1.1);
+}
+/* The header's PUBLISHING link has its own, narrower interaction spec in
+   Website.txt (colour + underline only) — every other .text-link (footer
+   and Founder's LinkedIn/ArtStation) follows the general "Links
+   Interactions" rule, which adds a 10% hover scale. */
+.site-header__nav .text-link:hover,
+.site-header__nav .text-link:focus-visible{
+  transform:none;
 }
 @media (prefers-reduced-motion:reduce){
   .text-link{transition:color .2s ease}
@@ -301,8 +339,11 @@ main{flex:1 0 auto}
   gap:1rem;
 }
 .site-footer__logo{justify-self:start;height:60px;display:flex;align-items:center;transition:opacity .2s ease}
-.site-footer__logo img{height:60px;width:auto}
+.site-footer__logo img{height:60px;width:auto;max-width:100%}
 .site-footer__logo:hover,.site-footer__logo:focus-visible{opacity:.82}
+@media (max-width:480px){
+  .site-footer__logo img{height:auto;width:min(180px,50vw)}
+}
 .site-footer__linkedin{justify-self:center}
 .site-footer__legal{
   justify-self:end;margin:0;
@@ -333,7 +374,10 @@ main{flex:1 0 auto}
   line-height:1.16;
   letter-spacing:-.01em;
   color:var(--gold-light);
-  max-width:20ch;
+  /* No ch cap: the reference sets this on one line at the 1200px design
+     width, so it should only wrap where the viewport genuinely can't fit
+     it. text-wrap:balance still keeps a natural break if it does wrap. */
+  max-width:100%;
   margin-inline:auto;
   text-wrap:balance;
 }
@@ -410,7 +454,7 @@ main{flex:1 0 auto}
   text-transform:uppercase;
   color:var(--gold-light);
 }
-.founder__card p{
+.founder__card p:not(.founder__role){
   font-family:var(--font-serif);font-weight:400;
   font-size:var(--fs-body);line-height:1.5;
   color:var(--ivory);
@@ -433,6 +477,10 @@ main{flex:1 0 auto}
   padding-block:50px;
   display:grid;
   grid-template-columns:minmax(0,565px) minmax(0,565px);
+  /* Grid rows stretch to their tallest item by default, which was pulling
+     the 228px-tall connect-card up to match the taller form column. Start-
+     align both columns so each keeps its own natural height instead. */
+  align-items:start;
   justify-content:center;
   gap:30px;
 }
@@ -440,8 +488,14 @@ main{flex:1 0 auto}
   .contact-columns{grid-template-columns:minmax(0,565px);justify-items:center}
 }
 
+/* Unlike the Founder card, Website.txt gives this card only a horizontal
+   margin (20px) and a "Between Text Margin" of 10px — no top/bottom
+   padding value — so height comes from a fixed 228px box with the content
+   centred inside it, not from vertical padding stacked on top of it. */
 .connect-card{
   width:100%;max-width:565px;min-height:228px;
+  padding-block:0;
+  padding-inline:20px;
   display:flex;flex-direction:column;justify-content:center;
   gap:10px;
 }
@@ -475,9 +529,10 @@ main{flex:1 0 auto}
   color:var(--peach);
   font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
   letter-spacing:var(--ls-wide);
+  text-align:center;
   height:30px;
   padding:0 1rem;
-  transition:border-color .2s ease,color .2s ease;
+  transition:border-color .2s ease,color .2s ease,box-shadow .2s ease,background-color .2s ease;
 }
 .field textarea{
   height:120px;
@@ -485,12 +540,37 @@ main{flex:1 0 auto}
   padding:.65rem 1rem;
   resize:vertical;
   line-height:1.4;
+  /* A tall multi-line field reads better centred horizontally but top-
+     aligned, not vertically centred — text-align only affects the
+     horizontal axis, so this is safe with the shared centred rule above. */
 }
 .field input::placeholder,.field textarea::placeholder{color:var(--peach);opacity:.85}
-.field input:hover,.field textarea:hover{border-color:var(--gold-light)}
-.field input:focus,.field textarea:focus{outline:none;border-color:var(--gold-dark)}
-.field.is-filled input,.field.is-filled textarea{border-color:var(--field-filled);color:var(--field-filled)}
-.field.is-error input,.field.is-error textarea{border-color:var(--field-error)}
+.field input:hover,.field textarea:hover{
+  border-color:var(--gold-light);
+  background:rgba(242,214,138,.08);
+}
+.field input:focus,.field textarea:focus{
+  outline:none;
+  border-color:var(--gold-dark);
+  box-shadow:0 0 0 4px rgba(191,148,64,.22);
+}
+.field.is-filled input,.field.is-filled textarea{
+  border-color:var(--field-filled);
+  color:var(--field-filled);
+}
+.field.is-error input,.field.is-error textarea{
+  border-color:var(--field-error);
+  color:var(--field-error);
+}
+.field.is-error input::placeholder,.field.is-error textarea::placeholder{color:var(--field-error)}
+.js .field.is-error input,.js .field.is-error textarea{animation:fieldErrorPulse .5s ease;}
+@keyframes fieldErrorPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(242,131,122,0)}
+  35%{box-shadow:0 0 0 5px rgba(242,131,122,.28)}
+}
+@media (prefers-reduced-motion:reduce){
+  .js .field.is-error input,.js .field.is-error textarea{animation:none}
+}
 .field__error{
   display:none;margin-top:.4rem;
   font-family:var(--font-sans);font-size:var(--fs-small);color:var(--field-error);
@@ -535,16 +615,19 @@ main{flex:1 0 auto}
 }
 
 /* ==========================================================
-   Page transitions — short slide in/out between pages.
-   main.js toggles these classes; a plain link click always works even
-   with JS disabled, this is progressive enhancement only.
+   Page transitions — short slide in/out of the inner content only.
+   main.js toggles these classes on <main>, never on <body>: the
+   starfield background, header and footer are outside <main> and are
+   never touched, so they stay put and never flash/disappear between
+   pages. A plain link click always works even with JS disabled — this
+   is progressive enhancement only.
    ========================================================== */
-.js body{transition:opacity .32s cubic-bezier(.22,.61,.36,1),transform .32s cubic-bezier(.22,.61,.36,1)}
-.js body.page-enter{opacity:0;transform:translateY(12px)}
-.js body.page-exit{opacity:0;transform:translateY(-12px)}
+.js main{transition:opacity .32s cubic-bezier(.22,.61,.36,1),transform .32s cubic-bezier(.22,.61,.36,1)}
+.js main.page-enter{opacity:0;transform:translateY(12px)}
+.js main.page-exit{opacity:0;transform:translateY(-12px)}
 @media (prefers-reduced-motion:reduce){
-  .js body{transition:none}
-  .js body.page-enter,.js body.page-exit{opacity:1;transform:none}
+  .js main{transition:none}
+  .js main.page-enter,.js main.page-exit{opacity:1;transform:none}
 }
 
 /* ---------- Print ---------- */

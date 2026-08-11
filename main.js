@@ -35,20 +35,26 @@
     targets.forEach(function (el) { observer.observe(el); });
   })();
 
-  /* ---------- 2. Page transitions ---------- */
+  /* ---------- 2. Page transitions ----------
+     Only <main> animates — the starfield background, header and footer
+     live outside it and are never touched, so they read as one
+     persistent frame across navigations instead of flashing away and
+     back with every click. */
   (function pageTransitions() {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
     window.addEventListener('pageshow', function () { window.scrollTo(0, 0); });
 
-    var body = document.body;
+    var content = document.getElementById('main');
+    if (!content) return;
+
     if (reducedMotion) {
-      body.classList.remove('page-enter');
+      content.classList.remove('page-enter');
       return;
     }
 
     requestAnimationFrame(function () {
-      requestAnimationFrame(function () { body.classList.remove('page-enter'); });
+      requestAnimationFrame(function () { content.classList.remove('page-enter'); });
     });
 
     var TRANSITION_MS = 320;
@@ -74,7 +80,7 @@
       }
 
       event.preventDefault();
-      body.classList.add('page-exit');
+      content.classList.add('page-exit');
       window.setTimeout(function () { window.location.href = link.href; }, TRANSITION_MS);
     });
   })();
