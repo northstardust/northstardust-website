@@ -3,10 +3,9 @@
 A static, multi-page site. No framework, no build step, no dependencies.
 Edit the files, commit, push — that's the whole workflow.
 
-Built against three specification documents in the project root:
-`North_Stardust_Website_Development_Prompt.md`, `Website.txt`, and
-`North_Stardust_Claude_Final_Clarifications.md`. The previous single-page V1
-build is documented (for history only) in `north-stardust-website-v1-spec.md`.
+Built against the original specification documents and the previous
+single-page V1 build's own spec, kept for history in `Trash Bin/` (not part
+of the active project).
 
 ---
 
@@ -30,15 +29,20 @@ index.html · contact.html · publishing.html
 styles.css        design tokens + every rule, in one file
 main.js           reveal-on-scroll, page transitions, content sync,
                    stardust cursor trail, contact form validation/submit
+functions/_middleware.js   Cloudflare Pages Function — blocks public access
+                   to non-website paths (Trash Bin/, README.md, etc.)
 functions/api/contact.js   Cloudflare Pages Function — POST /api/contact
 robots.txt · sitemap.xml · favicon.ico
 assets/
   fonts/          Cormorant 400, Spectral 400, Inter 400/500/600 (woff2)
-  img/            logo-double-line.svg, wordmark-light.svg, star.svg,
-                   founder-rounded.png, Stars.png, favicons, og-image.jpg
+  img/            logo-double-line.svg, logo-single-line.svg, logo.png,
+                   founder-rounded.png, Stars.avif, favicons, og-image.jpg
   Website Texts.md   editable long-form copy (see "Content" below)
-assets-source/    master/original brand files — not referenced by the site
 ```
+
+Brand/source master files and anything not needed by the live site live in
+`Trash Bin/` — kept on disk, git-ignored, and blocked from public serving by
+`functions/_middleware.js`.
 
 ## Running it locally
 
@@ -114,9 +118,9 @@ Type scale (desktop, ≥1200px — the Prompt/Website.txt targets):
 `--fs-link` 16px · `--fs-small` 14px. Every rule references one of these
 tokens; nothing introduces a new size.
 
-**Glass card** (Figma-confirmed, `North_Stardust_Claude_Final_Clarifications.md` §5):
-Gold Light fill at 5% opacity, 20px backdrop blur, 30px radius, 20px
-padding, **no stroke**. One shared `.glass` class.
+**Glass card** (Figma-confirmed): Gold Light fill at 5% opacity, 20px
+backdrop blur, 30px radius, 20px padding, **no stroke**. One shared `.glass`
+class.
 
 ## Known approximations — please confirm
 
@@ -136,17 +140,14 @@ fixing them later is a small edit:
    values in `styles.css` (search `font-weight:400` under the type-scale
    comment).
 3. **Reference screenshots** (`Header.png`, `Footer.png`, `Founder.png`,
-   `Contact.png`, `Desktop Home Page.png`, etc.) named throughout the Prompt
-   document were not physically present in the project or supplied as
+   `Contact.png`, `Desktop Home Page.png`, etc.) named throughout the original
+   Prompt document were not physically present in the project or supplied as
    attachments — layout was built from the explicit pixel/typography values
-   in `Website.txt` and the Prompt instead, which fully specify every
-   dimension used. Worth a visual diff against the originals if they turn
-   up later.
-4. **Founder role letter-spacing** ("18% letter spacing… to fit exactly the
-   size of length of the name") is implemented as a fixed `0.18em`
-   letter-spacing, not a JS-computed width match to the name above it — the
-   literal auto-fit behaviour wasn't otherwise required anywhere else in the
-   brief and isn't worth the added script for a decorative detail.
+   in the spec instead, which fully specify every dimension used.
+4. ~~**Founder role letter-spacing**~~ — resolved. `main.js` measures the
+   founder name's rendered width at runtime and solves for the exact
+   letter-spacing needed on the role line below it, rather than using a
+   fixed `0.18em` value.
 5. **Error-state red** (`--field-error` in `styles.css`) isn't in the brand
    palette — spec never names one for form validation errors. Used a
    standard accessible red; low-risk since error colour is a UX convention,
