@@ -1,0 +1,6 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' 'sha256-r5Zf4jF53zaPyLvFaPfq9zdscvFkmuJli+lOy0j6vVA=' 'sha256-PrfH5DMAJsoLkznFcL12RLQCU5s7JTwtFPJoH20OVAU='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.clarity.ms; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
