@@ -1,0 +1,14 @@
+# Local tooling
+.wrangler/
+
+# Source/reference/master material — legitimate project files, kept on
+# disk, but not part of the deployed website and not tracked in Git.
+assets-source/
+assets/references/
+Trash Bin/
+
+# Internal development/brief documents — not website content.
+Website.txt
+North_Stardust_Website_Development_Prompt.md
+North_Stardust_Claude_Final_Clarifications.md
+north-stardust-website-v1-spec.md

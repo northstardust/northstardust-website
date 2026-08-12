@@ -672,6 +672,14 @@ a,button,.btn,.text-link,[role="button"]{cursor:pointer}
   opacity:1;transform:none;
   transition:opacity .75s cubic-bezier(.22,.61,.36,1),transform .75s cubic-bezier(.22,.61,.36,1);
 }
+/* Above-the-fold content marked .reveal--eager in the HTML paints
+   immediately — it never starts at opacity:0, so it doesn't wait on
+   main.js (deferred, fetched separately) to become visible/LCP-eligible.
+   main.js's own "already visible" check still adds .is-in to these
+   elements on load, which is a harmless no-op here since the end state
+   (opacity:1, no transform) already matches. Non-critical/below-the-fold
+   .reveal content is untouched and still fades in on scroll as before. */
+.js .reveal.reveal--eager{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   .js .reveal{opacity:1;transform:none}
   .js .reveal.is-in{transition:none}
