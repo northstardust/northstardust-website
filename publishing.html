@@ -56,23 +56,21 @@
         href="index.html#hero"
         aria-label="North Stardust — Home"
       >
-        <img
-          class="site-header__logo-wide"
-          src="assets/img/logo-double-line.svg"
-          width="240"
-          height="100"
-          alt="North Stardust"
-          decoding="async"
-        >
-        <img
-          class="site-header__logo-narrow"
-          src="assets/img/logo-single-line.svg"
-          width="240"
-          height="60"
-          alt=""
-          aria-hidden="true"
-          decoding="async"
-        >
+        <picture>
+          <source
+            srcset="assets/img/logo-single-line.svg"
+            media="(max-width: 767px)"
+            width="240"
+            height="60"
+          >
+          <img
+            src="assets/img/logo-double-line.svg"
+            width="240"
+            height="100"
+            alt="North Stardust"
+            decoding="async"
+          >
+        </picture>
       </a>
 
       <nav class="site-header__nav" aria-label="Primary navigation">

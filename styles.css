@@ -381,10 +381,6 @@ a {
   object-fit: contain;
 }
 
-/* One lockup or the other, never both. Mobile uses the single-line mark. */
-.site-header__logo-narrow {
-  display: none;
-}
 
 .site-header__logo:hover {
   filter: drop-shadow(0 0 10px rgb(242 214 138 / 0.55)) brightness(1.08);
@@ -813,10 +809,10 @@ a {
   color: var(--gold-light);
 }
 
+/* Regular weight, not the browser's bold default for a heading. */
 .studio-work--tool .studio-work__title {
   color: var(--gold-light);
   font: 400 30px/1.1 var(--font-sans);
-  font-weight: 400;
 }
 
 /* 24px between the parts of the Tool and Worlds subsections. */
@@ -1891,14 +1887,6 @@ a {
   }
 
   /* ---- Header ---- */
-  .site-header__logo-wide {
-    display: none;
-  }
-
-  .site-header__logo-narrow {
-    display: block;
-  }
-
   /* Half height, and the lockup no longer fills the Header band. */
   .site-header__logo img {
     height: calc(var(--header-height) / 2);

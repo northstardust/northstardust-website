@@ -118,10 +118,9 @@ clipped: the stage gets `data-stage-fits="false"`, which turns on
 `role="group"` label so it can be scrolled by keyboard as well as by wheel.
 Page-level scroll snapping between states is unaffected.
 
-Roughly, per state: at ≥1200px viewport height everything is at or near
-scale 1; at 1000px states run 0.83–0.93 and only state 06 needs the scroll
-fallback; at the 900px floor of the Desktop band four of six states sit at
-0.8 and scroll.
+Roughly, per state: at ≥1400px viewport height everything is at or near
+scale 1; below that the states scale down together, and state 06 is the
+first to reach the floor and take the scroll fallback.
 
 One visible consequence: uniform scaling shrinks width too, so at 0.8 the
 1200px content column renders 960px wide with wider side margins. That is the
@@ -129,20 +128,55 @@ cost of preserving the composition exactly rather than re-flowing it.
 
 ### Profiles
 
-The same markup is composed differently at three sizes:
+Four layouts, and the two state-based ones are chosen on width **and**
+height together — not on height alone:
 
-| Profile | Condition | Behaviour |
+| Layout | Condition | Behaviour |
 |---|---|---|
-| Desktop | ≥1200px wide, ≥900px tall | Six states, full type scale |
-| Laptop | ≥1200px wide, <900px tall | Six states, a different set of blocks per state |
-| Stacked | <1200px wide | Snap off, stage unfolds, every section shown in order |
+| Desktop | ≥1200w, ≥1250h | Six snapped states, the tall compositions |
+| Laptop | ≥1200w, <1250h | Six snapped states, a different set of blocks per state |
+| Tablet | 768–1199w | One continuous scrolling page |
+| Mobile | ≤767w | One continuous scrolling page, its own type scale |
+
+Two reference cases layer extra spacing on the Laptop base, each in its own
+media query after it:
+
+| Case | Condition | On top of Laptop |
+|---|---|---|
+| 1440×1024 | ≥1440w, 900–1249h | Studio rhythm of 48px in State 03 |
+| 1440×864 | ≥1440w, <900h | Header gap 24px, section gap 48px, Hero text gap 48px |
+
+The corner not named by those cases — 1200–1439 wide and under 900 tall —
+falls through to the plain Laptop set.
 
 Desktop and Laptop deliberately show **different content per state** — e.g.
 state 01 is Hero + Compass + Studio pillars on Desktop but Hero + Compass on
 Laptop. The Laptop block lists its corrections at the top of its media query.
-`main.js` mirrors the same thresholds in `CONFIG.breakpoints`
-(`mobile: 768`, `layout: 1200`, `laptopHeight: 900`) — **if you move a
+`main.js` mirrors the threshold in `CONFIG.breakpoints`
+(`mobile: 768`, `layout: 1200`, `laptopHeight: 1250`) — **if you move a
 breakpoint in one place, move it in the other.**
+
+### Tablet and Mobile
+
+Neither is a state machine. Both are ordinary scrolling documents: the canvas
+becomes a plain column on a 24px rhythm, snapping is off, and every section
+is present in order. The Step 01–06 language in the design notes describes
+**content order**, not viewport states.
+
+Three things there are worth knowing before editing:
+
+- **Section rules are drawn, not bordered.** The flow needs five separators
+  and the state machine only ever carried two elements, so each boundary is a
+  `::before` on the section below it, inset 24px each side.
+- **The Studio is one grid with everything flattened into it.** Both work
+  wrappers and the pillars are `display: contents` so each pillar can be
+  paired with its own work. Tablet runs two equal columns; Mobile runs three
+  tracks — `140px | flexible | 99px` — because its two rows do not share a
+  split. Useful Tools takes the first two tracks for its copy; Original
+  Worlds takes the first for its artwork.
+- **A few elements exist only here** and are inert above 768px: the visible
+  Studio title, the second double rule, the single-line lockup and the
+  Founder's short statement.
 
 ## Content
 
