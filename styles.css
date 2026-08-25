@@ -770,7 +770,6 @@ a {
   border: 0;
 }
 
-.studio__divider--b,
 .founder__mobile-text {
   display: none;
 }
@@ -781,9 +780,19 @@ a {
   margin-block: 24px;
 }
 
+/*
+  Desktop and Laptop carry a single double rule, between the pillars and the
+  works. The second one belongs to the Tablet and Mobile flow only, and has to
+  be hidden after the rule above or it is turned back on.
+*/
+.studio__divider--b {
+  display: none;
+}
+
+/* A pair of hairlines - this is the only double rule in the design. */
 .studio__divider span {
   display: block;
-  height: 2px;
+  height: 1px;
   background: var(--gold-light);
 }
 
@@ -807,6 +816,7 @@ a {
 .studio-work--tool .studio-work__title {
   color: var(--gold-light);
   font: 400 30px/1.1 var(--font-sans);
+  font-weight: 400;
 }
 
 /* 24px between the parts of the Tool and Worlds subsections. */
@@ -1191,7 +1201,7 @@ a {
 
   /* State 03: Separator + Studio + Separator */
   :root[data-landing-step="3"] .stage-section--studio .studio__divider {
-    margin-block: 68px;
+    margin-block: 64px;
   }
 
   :root[data-landing-step="3"] .stage-line--a {
@@ -1373,7 +1383,7 @@ a {
 
 @media (min-width: 1440px) and (min-height: 900px) and (max-height: 1249px) {
   :root[data-landing-step="3"] .stage-section--studio .studio__divider {
-    margin-block: 68px;
+    margin-block: 48px;
   }
 }
 
@@ -1514,6 +1524,25 @@ a {
     rather than as a separate element, because the flow needs five separators
     and the state machine only ever had two.
   */
+  /*
+    The Header sits over scrolling content on these layouts. The page
+    background scrolls with the document, so it cannot be painted behind a
+    sticky header to match; instead what passes underneath is blurred out and
+    covered by a Midnight gradient, solid at the top and clear by the Header's
+    lower edge.
+  */
+  .site-header {
+    background:
+      linear-gradient(
+        to bottom,
+        var(--midnight) 0%,
+        rgb(15 23 42 / 0.85) 55%,
+        rgb(15 23 42 / 0) 100%
+      );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
   .stage-canvas {
     display: flex;
     flex-direction: column;
@@ -1526,13 +1555,16 @@ a {
     padding-block: 0;
   }
 
-  #compass,
-  #studio,
-  #horizon,
-  #founder,
-  #contact {
-    border-top: 2px solid var(--gold-light);
-    padding-top: 24px;
+  #compass::before,
+  #studio::before,
+  #horizon::before,
+  #founder::before,
+  #contact::before {
+    content: "";
+    display: block;
+    height: 2px;
+    margin: 0 24px 24px;
+    background: var(--gold-light);
   }
 
   .stage-line,
@@ -1565,6 +1597,15 @@ a {
     height: auto;
   }
 
+  .hero__description {
+    text-align: center;
+    padding-inline: 24px;
+  }
+
+  .hero__content {
+    gap: 48px;
+  }
+
   /* The Studio pairs each pillar with its own work, so both wrappers flatten
      into one grid and every piece is placed by hand. */
   .studio__title {
@@ -1590,7 +1631,7 @@ a {
     display: grid;
     column-gap: 24px;
     row-gap: 24px;
-    align-items: center;
+    align-items: start;
   }
 
   .studio__pillars,
@@ -1598,6 +1639,11 @@ a {
   .studio-work--tool,
   .studio-work--ip {
     display: contents;
+  }
+
+  .studio-work--tool img,
+  .studio-work--ip img {
+    align-self: start;
   }
 
   .studio__title {
@@ -1740,10 +1786,16 @@ a {
   .founder {
     display: grid;
     grid-template-columns: 211px minmax(0, 1fr);
-    column-gap: 24px;
+    /*
+      The portrait spans the role's row and the paragraph's, and is a little
+      taller than the two of them need. The paragraph's row is flexible so it
+      takes that difference, leaving exactly 24px under the role.
+    */
+    grid-template-rows: auto auto 1fr auto auto auto;
+    column-gap: 48px;
     row-gap: 24px;
     align-items: start;
-    padding-inline: var(--gutter);
+    padding-inline: calc(var(--gutter) + 24px);
   }
 
   .founder__media,
@@ -1791,6 +1843,15 @@ a {
     grid-row: 6;
   }
 
+  /* ---- Compass and Horizon ---- */
+  .major-message {
+    font-size: 36px;
+  }
+
+  .section-intro {
+    gap: 24px;
+  }
+
   /* ---- Contact ---- */
   .contact-columns {
     width: min(100%, 540px);
@@ -1829,6 +1890,21 @@ a {
     display: block;
   }
 
+  /* Half height, and the lockup no longer fills the Header band. */
+  .site-header__logo img {
+    height: calc(var(--header-height) / 2);
+  }
+
+  .site-footer__logo,
+  .site-footer__logo img {
+    height: 30px;
+  }
+
+  /* The menu icon needs room off the right edge. */
+  .site-header__inner {
+    padding-right: calc(var(--gutter) + 24px);
+  }
+
   .menu-toggle span {
     background: var(--gold-light);
   }
@@ -1837,22 +1913,41 @@ a {
     The open menu covers the page so it stays readable, and the Header sits
     above it on its own solid ground so nothing shows through behind it.
   */
+  /*
+    A drop-down under the Header, not a page. The panel is what the reader
+    reads; everything behind it is blurred back so it cannot compete.
+  */
   .mobile-nav:not([hidden]) {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: var(--header-height);
+    right: calc(var(--gutter) + 24px);
+    left: auto;
     z-index: 900;
     display: flex;
     flex-direction: column-reverse;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 24px;
-    padding: calc(var(--header-height) + 32px) var(--gutter) var(--gutter);
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 20px;
+    width: max-content;
+    min-width: 160px;
+    padding: 20px;
     background: var(--midnight);
-    border: 0;
+    border: 1px solid var(--gold-light);
+    border-radius: var(--radius-card);
   }
 
-  .site-header:has(.mobile-nav:not([hidden])) {
-    background: var(--midnight);
+  .mobile-nav:not([hidden])::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgb(15 23 42 / 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .mobile-nav a {
+    text-align: right;
   }
 
   .mobile-nav a[data-nav-target="contact"] {
@@ -1881,6 +1976,11 @@ a {
     height: 342px;
   }
 
+  /* ---- Compass and Horizon ---- */
+  .section-intro {
+    gap: 12px;
+  }
+
   /* ---- Supporting copy the Mobile layout drops ---- */
   #compass .body-copy,
   #horizon .body-copy,
@@ -1893,6 +1993,14 @@ a {
   /* ---- Studio: one column ---- */
   #studio .landing-shell {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding-inline: calc(var(--gutter) + 24px);
+  }
+
+  /* The title and the rules keep the section's own measure. */
+  .studio__title,
+  .studio__divider--a,
+  .studio__divider--b {
+    margin-inline: -24px;
   }
 
   .pillar {
@@ -1961,22 +2069,37 @@ a {
 
   /* ---- Founder ---- */
   .founder {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 
+  /* Flattened so the portrait can sit between the role and the statement. */
   .founder__media,
-  .founder__bio,
-  .founder__id,
-  .founder__text {
-    display: block;
+  .founder__bio {
+    display: contents;
   }
 
   .founder__id {
+    order: 1;
     display: flex;
     flex-direction: column;
     gap: 12px;
     align-items: center;
+    width: max-content;
+    max-width: 100%;
+  }
+
+  .founder__portrait { order: 2; }
+  .founder__links--inline { order: 3; }
+  .founder__mobile-text { order: 4; }
+
+  /* Name and role read as one block of the same width. */
+  .founder__name,
+  .founder__role {
+    width: 100%;
+    text-align: center;
   }
 
   .founder__name {
@@ -2009,6 +2132,10 @@ a {
   }
 
   /* ---- Contact ---- */
+  .connect-card {
+    margin-bottom: 48px;
+  }
+
   .form-row {
     flex-direction: column;
   }
