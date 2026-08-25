@@ -4,6 +4,9 @@
 
 ## Pages
 
-- [Home](https://northstardust.studio/): The studio's hero statement and an introduction to its focus — The Studio, The Compass and The Horizon.
-- [Contact](https://northstardust.studio/contact): Meet Athanasios Zagkliveris, Founder and Creative Director of North Stardust, and get in touch about a project, collaboration or idea.
-- [Publishing](https://northstardust.studio/publishing): North Stardust's published work. Coming soon.
+- [Home](https://northstardust.studio/): The studio's hero statement and its focus — The Compass, The Studio and its work, The Horizon, and Athanasios Zagkliveris, Founder and Creative Director.
+- [Publishing](https://northstardust.studio/publishing.html): North Stardust's published work. Coming soon.
+
+## Sections of the Home page
+
+- [Contact](https://northstardust.studio/#contact): Get in touch about a project, collaboration or idea. Not a separate page — `/contact` is only a redirect kept for old links.
