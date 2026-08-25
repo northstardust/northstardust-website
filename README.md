@@ -43,8 +43,7 @@ assets/
                    Hero Image.png, Cover Page Navisworks Guide.png,
                    Original Worlds.png
   Website_Texts.md   editable long-form copy (see "Content" below)
-  CHANGES.md      historical design-update spec; blocked from public serving
-  references/     Figma exports used as visual reference; not served live
+  references/     design references; git-ignored and not served live
 ```
 
 ## Running it locally
