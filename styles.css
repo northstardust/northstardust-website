@@ -1,711 +1,1598 @@
+/*# North Stardust — `styles.css`
+
+This stylesheet deliberately restores the old reusable background system and removes the unwanted Header background.
+
+Key corrections:
+
+- `Stars.avif` is tiled at `1200px auto`.
+- Background is `absolute`, not fixed.
+- The starfield fades to midnight by 20% of the page height.
+- The Header has **no background colour, no backdrop filter and no duplicated starfield**.
+- The Header remains above the content and the stage itself begins below the Header.
+- The Header CONTACT is always a pill.
+- The Submit button uses the same established pill button styling.
+- Exactly six snap targets exist.
+- State content is isolated inside one presentation stage, so neighbouring sections cannot bleed into another state.
+- THE COMPASS and THE HORIZON labels are left aligned.
+- Hero keeps the 64px outer relationship and 48px Hero Content relationship.*/
+
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("assets/fonts/cormorant-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/inter-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/inter-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/inter-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Spectral";
+  src: url("assets/fonts/spectral-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --midnight: #0F172A;
+  --gold-light: #F2D68A;
+  --gold-dark: #BF9440;
+  --ivory: #F1EDE7;
+  --peach: #F0E5DC;
+  --field-filled: #397EE6;
+  --field-error: #F2837A;
+
+  --font-brand: "Cormorant Garamond", Georgia, serif;
+  --font-serif: "Spectral", Georgia, serif;
+  --font-sans: "Inter", Arial, sans-serif;
+
+  --content-width: 1200px;
+  --gutter: 24px;
+  --column-gap: 48px;
+
+  /*
+    Vertical rhythm between the blocks of a state. Separator lines are blocks
+    in their own right, so they sit on this rhythm too.
+
+    These are exact at every viewport size.
+  */
+  --section-gap: 64px;
+
+  /* Gap between the Header and the top of the stage. */
+  --main-gap: 48px;
+
+  /* Width of the Founder portrait column. The bio column is derived from it. */
+  --founder-media-width: 332px;
+
+  --header-height: 100px;
+  --footer-height: 100px;
+
+  --hero-title-size: 64px;
+  --major-size: 48px;
+  --section-label-size: 24px;
+  --body-size: 20px;
+  --link-size: 16px;
+
+  --radius-pill: 999px;
+  --radius-card: 30px;
+  --radius-field: 24px;
+
+  --stage-height: calc(100svh - var(--header-height) - var(--main-gap));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+body {
+  position: relative;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--midnight);
+  color: var(--ivory);
+  font-family: var(--font-serif);
+  font-size: var(--body-size);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+ul {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 4px;
+}
+
+/*
+  #main-content carries tabindex="-1" so the skip link can move focus to it.
+  It is the full width of the page and several screens tall, so the shared
+  focus ring paints its top edge as a stray gold line just under the Header -
+  which is what shows up after using the skip link and then pressing a key.
+  Landing on the content is the confirmation here; every other focus ring
+  stays.
+*/
+#main-content:focus,
+#main-content:focus-visible {
+  outline: none;
+}
+
+.visually-hidden,
+.honeypot {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  z-index: 2000;
+  padding: 0.75rem 1rem;
+  transform: translate(-50%, -120%);
+  background: var(--gold-light);
+  color: var(--midnight);
+  font: 500 14px/1 var(--font-sans);
+}
+
+.skip-link:focus {
+  transform: translate(-50%, 0);
+}
+
 /* ==========================================================
-   North Stardust — Website
-   Static stylesheet. No framework, no build step.
-
-   Rebuilt against:
-     North_Stardust_Website_Development_Prompt.md
-     Website.txt
-     North_Stardust_Claude_Final_Clarifications.md
-
-   Three families, three jobs:
-     Cormorant Garamond — brand / hero statement only.
-     Spectral           — the studio's voice: headings, body copy.
-     Inter               — the interface: nav, buttons, labels, forms.
+   SHARED BACKGROUND — restored old implementation
    ========================================================== */
 
-/* ---------- Fonts (self-hosted, latin subset) ---------------- */
-@font-face{font-family:'Cormorant Garamond';src:url('assets/fonts/cormorant-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Spectral';src:url('assets/fonts/spectral-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Inter';src:url('assets/fonts/inter-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Inter';src:url('assets/fonts/inter-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:'Inter';src:url('assets/fonts/inter-600.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+/*
+  Four layers, bottom to top:
+    1. solid Midnight Blue
+    2. the Stars.avif tile
+    3. a Midnight Blue linear gradient, transparent at the top and fully
+       opaque by 20% of the height
+    4. a #1E3A8A radial gradient, transparent at the top, 50% at the middle
+       and 80% at the bottom, the whole layer at 60%
 
-/* ---------- Design tokens ---------- */
-:root{
-  /* brand palette — exact values from Website.txt / Clarifications */
-  --midnight:#0F172A;
-  --gold-dark:#BF9440;
-  --gold-light:#F2D68A;
-  --peach:#F0E5DC;
-  --ivory:#F1EDE7;
-
-  --field-filled:#397EE6;
-  --field-filled-fill:rgba(57,126,230,.05);   /* #397EE6 @ 5% */
-  --field-error:#F2837A;
-  --field-error-fill:rgba(242,131,122,.05);   /* #F2837A @ 5% */
-
-  --ink:var(--ivory);
-
-  /* type — Cormorant brand, Spectral voice, Inter interface.
-     Desktop (>=1200px) targets, from Website.txt / the Prompt:
-       H1 64  · H2 48 · H3 24 · Body 20 · Links/Buttons 16 · Small 14
-     Every rule below references one of these tokens; nothing invents a size. */
-  --font-brand:'Cormorant Garamond',Georgia,'Times New Roman',serif;
-  --font-serif:'Spectral',Georgia,'Times New Roman',serif;
-  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-
-  /* Each ramps linearly and lands on its exact px target at exactly
-     1200px viewport width — Website.txt states the page/content width as
-     a flat 1200px, not a "starts at 1200 and keeps growing" fluid system,
-     so every clamp() is solved to reach TARGET precisely at 1200px and
-     hold flat above it (the max branch), with the stated min as the floor
-     below it. */
-  --fs-h1:clamp(2.25rem,1.3rem + 3.6vw,4rem);         /* 64px at 1200px */
-  --fs-h2:clamp(1.75rem,1.425rem + 2.1vw,3rem);       /* 48px at 1200px */
-  --fs-h3:clamp(1.2rem,1.05rem + .6vw,1.5rem);        /* 24px at 1200px */
-  --fs-body:clamp(1.05rem,1.1rem + .2vw,1.25rem);     /* 20px at 1200px */
-  --fs-link:clamp(.95rem,.8875rem + .15vw,1rem);      /* 16px at 1200px */
-  --fs-small:.875rem;                                  /* 14px */
-
-  --ls-wide:.1em;    /* 10% letter-spacing — links, buttons, form labels */
-  --ls-wider:.18em;  /* 18% — founder role line */
-
-  /* shape */
-  --radius-card:30px;
-  --radius-pill:999px;
-  --radius-field:24px;
-
-  /* glass — Figma-confirmed: fill only, no stroke, 30px radius, 20px pad */
-  --glass-fill:rgba(242,214,138,.05);   /* Gold Light @ 5% */
-  --glass-blur:20px;
-
-  /* layout */
-  --content-width:1200px;
-  --gutter:20px;
-  --header-h:100px;
-  --footer-h:100px;
+  It scrolls with the document.
+*/
+.page-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--midnight);
+  pointer-events: none;
 }
 
-/* ---------- Reset ---------- */
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body,h1,h2,h3,p,figure,dl,dd,ul{margin:0}
-ul{padding:0;list-style:none}
-img,picture,svg{display:block;max-width:100%}
-img{height:auto}
-a{color:inherit}
-button{font:inherit;color:inherit;background:none;border:0}
-input,textarea{font:inherit;color:inherit}
-
-/* Scrollbar hidden, scrolling still fully functional (wheel/trackpad/
-   keyboard) — only the drawn scrollbar track/thumb is removed. Since
-   every page hides it the same way, there's also no more width
-   difference between short pages (Publishing) and tall ones (Home,
-   Contact) to cause a sideways shift between them. */
-html{
-  scrollbar-width:none;      /* Firefox */
-  -ms-overflow-style:none;   /* legacy Edge */
-}
-html::-webkit-scrollbar{     /* Chrome, Edge, Safari */
-  width:0;
-  height:0;
-  background:transparent;
-}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + 1rem)}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-
-body{
-  background:var(--midnight);
-  color:var(--ink);
-  font-family:var(--font-sans);
-  font-size:var(--fs-body);
-  line-height:1.5;
-  font-weight:400;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-  overflow-x:hidden;
-  overflow-wrap:break-word;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  cursor:default;
-}
-main{flex:1 0 auto}
-
-/* Plain body copy is not editable, so it keeps the default arrow cursor
-   (set on body above) rather than the browser's native text I-beam.
-   Actual editable/clickable elements get their proper cursor back. */
-.field input,.field textarea{cursor:text}
-a,button,.btn,.text-link,[role="button"]{cursor:pointer}
-
-/* ---------- Utilities ---------- */
-.shell{
-  width:100%;
-  max-width:var(--content-width);
-  margin-inline:auto;
-  padding-inline:var(--gutter);
-}
-.vh{
-  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
-}
-.skip{
-  position:absolute;left:50%;top:0;transform:translate(-50%,-120%);
-  z-index:200;background:var(--gold-light);color:var(--midnight);
-  font-family:var(--font-sans);font-size:var(--fs-small);font-weight:600;
-  padding:.7rem 1.25rem;border-radius:0 0 8px 8px;
-  transition:transform .18s ease;
-}
-.skip:focus{transform:translate(-50%,0)}
-
-:focus-visible{
-  outline:2px solid var(--gold-light);
-  outline-offset:3px;
-  border-radius:2px;
+.page-bg__stars {
+  position: absolute;
+  inset: -8%;
+  background-image: url("assets/img/Stars.avif");
+  background-repeat: repeat;
+  background-size: 1200px auto;
+  opacity: 0.85;
+  animation: starDrift 300s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
-/* ==========================================================
-   Global background — one reusable layered component,
-   duplicated at the top of <body> on every page.
-   1. flat midnight base
-   2. Stars.avif, drifting very slowly, with a soft twinkle overlay
-   3. top/bottom 200px gradient bands so content never meets a hard edge
-   Respects prefers-reduced-motion: motion stops, the field stays put.
-   ========================================================== */
-.page-bg{
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  overflow:hidden;
-  background:var(--midnight);
-  pointer-events:none;
-}
-.page-bg__stars{
-  position:absolute;
-  inset:-8%;
-  background-image:url('assets/img/Stars.avif');
-  background-repeat:repeat;
-  background-size:1200px auto;
-  opacity:.85;
-  animation:starDrift 300s ease-in-out infinite alternate;
-  will-change:transform;
-}
-/* Asynchronous twinkle: two overlay copies of the same star field, each
-   offset in position and each pulsing opacity on its own uncoupled
-   duration/delay. Because the three layers (base + two overlays) are
-   spatially offset, their peaks brighten different stars at different
-   moments — it reads as scattered, natural scintillation rather than the
-   whole sky pulsing in unison, while staying pure CSS opacity animation
-   (cheap, no canvas, no per-star markup). */
 .page-bg__stars::before,
-.page-bg__stars::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background-image:inherit;
-  background-repeat:inherit;
-  background-size:inherit;
-  mix-blend-mode:screen;
-  pointer-events:none;
-}
-.page-bg__stars::before{
-  background-position:57px 31px;
-  opacity:.22;
-  animation:starTwinkleA 6.4s ease-in-out infinite alternate;
-}
-.page-bg__stars::after{
-  background-position:-83px 64px;
-  opacity:.3;
-  animation:starTwinkleB 8.7s ease-in-out infinite alternate;
-  animation-delay:-2.6s;
-}
-.page-bg__band{position:absolute;left:0;right:0;height:200px;pointer-events:none}
-.page-bg__band--top{
-  top:0;
-  background:linear-gradient(to bottom,var(--midnight) 0%,rgba(15,23,42,.75) 50%,rgba(15,23,42,0) 100%);
-}
-.page-bg__band--bottom{
-  bottom:0;
-  background:linear-gradient(to top,var(--midnight) 0%,rgba(15,23,42,.75) 50%,rgba(15,23,42,0) 100%);
-}
-@keyframes starDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3%,-2.5%,0)}}
-@keyframes starTwinkleA{from{opacity:.1}to{opacity:.38}}
-@keyframes starTwinkleB{from{opacity:.4}to{opacity:.14}}
-@media (prefers-reduced-motion:reduce){
-  .page-bg__stars,.page-bg__stars::before,.page-bg__stars::after{animation:none}
+.page-bg__stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  background-repeat: inherit;
+  background-size: inherit;
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
 
-/* Cursor stardust trail — canvas overlay, painted by main.js.
-   Absent entirely on touch devices and under reduced motion (see JS guard). */
-.stardust-trail{
-  position:fixed;inset:0;z-index:60;pointer-events:none;
+.page-bg__stars::before {
+  background-position: 57px 31px;
+  opacity: 0.22;
+  animation: starTwinkleA 6.4s ease-in-out infinite alternate;
 }
 
-/* ---------- Buttons & links ---------- */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  min-width:120px;height:30px;
-  padding-inline:1.1rem;
-  border-radius:var(--radius-pill);
-  background:var(--peach);
-  color:var(--midnight);
-  font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
-  letter-spacing:var(--ls-wide);
-  text-transform:uppercase;
-  text-decoration:none;
-  transition:background-color .2s ease;
-  cursor:pointer;
-}
-.btn:hover,.btn:focus-visible{background:var(--gold-light)}
-
-.text-link{
-  display:inline-block;
-  color:var(--peach);
-  font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
-  letter-spacing:var(--ls-wide);
-  text-transform:uppercase;
-  text-decoration:none;
-  transition:color .2s ease,transform .2s ease;
-}
-.text-link:hover,.text-link:focus-visible{
-  color:var(--gold-light);
-  text-decoration:underline;
-  transform:scale(1.1);
-}
-/* The header's PUBLISHING link has its own, narrower interaction spec in
-   Website.txt (colour + underline only) — every other .text-link (footer
-   and Founder's LinkedIn/ArtStation) follows the general "Links
-   Interactions" rule, which adds a 10% hover scale. */
-.site-header__nav .text-link:hover,
-.site-header__nav .text-link:focus-visible{
-  transform:none;
-}
-@media (prefers-reduced-motion:reduce){
-  .text-link{transition:color .2s ease}
-  .text-link:hover,.text-link:focus-visible{transform:none}
+.page-bg__stars::after {
+  background-position: -83px 64px;
+  opacity: 0.3;
+  animation: starTwinkleB 8.7s ease-in-out infinite alternate;
+  animation-delay: -2.6s;
 }
 
-/* ---------- Glass card — Figma-confirmed ----------
-   Fill: Gold Light @ 5% · Radius: 30px · Padding: 20px · No stroke.
-   Sections stay transparent so the starfield reads through everywhere
-   except inside a card. */
-.glass{
-  background:var(--glass-fill);
-  -webkit-backdrop-filter:blur(var(--glass-blur));
-  backdrop-filter:blur(var(--glass-blur));
-  border-radius:var(--radius-card);
-  padding:20px;
-  border:0;
+/*
+  Layer 3: transparent at the top, fully Midnight Blue further down.
+
+  The distance is stated in svh rather than as a percentage of the page. As a
+  percentage it resolved to 120svh on Home and 20svh on Publishing, which is
+  why the starfield looked completely different on the two pages. 120svh is
+  what Home already resolved to, so Home is unchanged and Publishing now
+  matches it.
+*/
+.page-bg__fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      var(--midnight) 120svh
+    );
 }
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  /* No blur support: fall back to a slightly stronger fill so cards still
-     read against the starfield. */
-  .glass{background:rgba(242,214,138,.09)}
+
+.page-bg__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /*
+    Anchored at the bottom, so 0% of the gradient is the bottom of the page and
+    100% is the top: 80% opaque at the bottom, 50% at the middle, clear at the
+    top.
+  */
+  background:
+    radial-gradient(
+      ellipse 140% 70% at 50% 100%,
+      rgb(30 58 138 / 0.8) 0%,
+      rgb(30 58 138 / 0.5) 50%,
+      rgb(30 58 138 / 0) 100%
+    );
+  opacity: 0.6;
+}
+
+@keyframes starDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-3%, -2.5%, 0); }
+}
+
+@keyframes starTwinkleA {
+  from { opacity: 0.1; }
+  to { opacity: 0.38; }
+}
+
+@keyframes starTwinkleB {
+  from { opacity: 0.4; }
+  to { opacity: 0.14; }
 }
 
 /* ==========================================================
-   Header — 100px, vertically centred, fixed in place.
+   HEADER — transparent
    ========================================================== */
-.site-header{
-  position:sticky;top:0;z-index:50;
-  height:var(--header-h);
-  background:rgba(15,23,42,.72);
-  -webkit-backdrop-filter:blur(14px);
-  backdrop-filter:blur(14px);
-}
-.site-header__inner{
-  max-width:var(--content-width);
-  margin-inline:auto;
-  height:100%;
-  display:flex;align-items:center;justify-content:space-between;
-  padding-left:var(--gutter);
-  padding-right:var(--gutter);
-  gap:1rem;
-}
-.site-header__logo{
-  display:flex;align-items:center;
-  height:100px;
-  flex:none;
-  filter:drop-shadow(0 0 0 rgba(242,214,138,0));
-  transition:filter .25s ease,opacity .25s ease;
-}
-.site-header__logo img{height:100px;width:auto}
-.site-header__logo:hover,.site-header__logo:focus-visible{
-  filter:drop-shadow(0 0 10px rgba(242,214,138,.55)) brightness(1.12);
-}
-.site-header__nav{display:flex;align-items:center;gap:24px}
 
-@media (max-width:640px){
-  .site-header{height:72px}
-  .site-header__logo,.site-header__logo img{height:52px}
-  .site-header__nav{gap:16px}
-  .site-header__nav .btn{min-width:96px;padding-inline:.8rem}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: var(--header-height);
+  pointer-events: none;
+  background: transparent;
+  border: 0;
 }
-@media (max-width:420px){
-  .site-header__inner{gap:.5rem;padding-left:14px;padding-right:14px}
-  .site-header__logo,.site-header__logo img{height:42px}
-  .site-header__nav{gap:10px}
-  .site-header__nav .btn{min-width:84px;height:28px}
+
+.site-header__inner {
+  width: min(100%, var(--content-width));
+  height: 100%;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-header__logo,
+.site-header__nav,
+.menu-toggle,
+.mobile-nav {
+  pointer-events: auto;
+}
+
+.site-header__logo {
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  flex: none;
+  transition: filter 0.25s ease;
+}
+
+.site-header__logo img {
+  width: auto;
+  height: var(--header-height);
+  object-fit: contain;
+}
+
+.site-header__logo:hover {
+  filter: drop-shadow(0 0 10px rgb(242 214 138 / 0.55)) brightness(1.08);
+}
+
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.site-header__nav > a,
+.founder__links a,
+.site-footer__linkedin {
+  display: inline-block;
+  color: var(--peach);
+  font: 500 var(--link-size)/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.site-header__nav > a:not(.contact-link):hover,
+.site-header__nav > a:not(.contact-link):focus-visible,
+.founder__links a:hover,
+.founder__links a:focus-visible,
+.site-footer__linkedin:hover,
+.site-footer__linkedin:focus-visible {
+  color: var(--gold-light);
+  text-decoration: underline;
+  transform: scale(1.06);
+}
+
+/* CONTACT — always a pill. */
+.contact-link {
+  min-width: 120px;
+  height: 30px;
+  padding-inline: 1rem;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--peach);
+  color: var(--midnight) !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+.contact-link:hover,
+.contact-link:focus-visible {
+  background: var(--gold-light);
+}
+
+.menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  margin: 5px auto;
+  background: var(--peach);
+}
+
+.mobile-nav {
+  display: none;
 }
 
 /* ==========================================================
-   Footer — 100px, vertically centred, stays in place.
-   Logo left · LinkedIn centre · copyright right.
+   SIX-STATE STAGE
    ========================================================== */
-.site-footer{height:var(--footer-h)}
-.site-footer__inner{
-  max-width:var(--content-width);
-  margin-inline:auto;
-  height:100%;
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:center;
-  padding-inline:var(--gutter);
-  gap:1rem;
+
+.landing-main {
+  position: relative;
 }
-.site-footer__logo{justify-self:start;height:60px;display:flex;align-items:center;transition:opacity .2s ease}
-.site-footer__logo img{height:60px;width:auto;max-width:100%}
-.site-footer__logo:hover,.site-footer__logo:focus-visible{opacity:.82}
-@media (max-width:480px){
-  .site-footer__logo img{height:auto;width:min(180px,50vw)}
+
+/*
+  Padding rather than a margin on the stage: a margin here would collapse
+  through this element and change where the anchor track starts.
+*/
+.landing-experience {
+  position: relative;
+  padding-top: var(--main-gap);
 }
-.site-footer__linkedin{justify-self:center}
-.site-footer__legal{
-  justify-self:end;margin:0;
-  font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
-  letter-spacing:var(--ls-wide);color:var(--peach);
+
+.landing-stage {
+  position: sticky;
+  top: calc(var(--header-height) + var(--main-gap));
+  z-index: 10;
+  width: 100%;
+  height: var(--stage-height);
+  min-height: 520px;
+  overflow: hidden;
+  pointer-events: none;
 }
-@media (max-width:640px){
-  .site-footer{height:auto}
-  .site-footer__inner{
-    grid-template-columns:1fr;
-    justify-items:center;text-align:center;
-    padding-block:1.75rem;gap:1rem;
+
+/*
+  The authored canvas.
+
+  Every state is composed here at its full authored size - the type scale, the
+  456px portrait and the 64px rhythm are never touched. main.js measures what a
+  state needs against what the stage has and sets --stage-scale, so the whole
+  composition shrinks as one piece instead of being re-flowed. Scaling from the
+  top edge keeps every state starting at the same point below the Header.
+
+  The active state's blocks are laid out as one top-aligned column. Sections
+  and separator lines are siblings in the same flow, so the spacing between
+  them is a single gap value, and a line can never sit on top of a section.
+*/
+.stage-canvas {
+  min-height: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--section-gap);
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: top center;
+}
+
+/*
+  Fallback for a state still taller than the stage at the smallest scale
+  main.js will apply: the stage becomes scrollable so nothing is put out of
+  reach. Never a clip.
+*/
+.landing-stage[data-stage-fits="false"] {
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+/*
+  Pulled up by exactly the space the Header and the sticky stage occupy ahead
+  of it, so the first anchor sits at scroll position 0. Without this there is a
+  screen of scroll above Step 01 in which the stage is already stuck and only
+  the background moves.
+*/
+.state-track {
+  position: relative;
+  height: 600svh;
+  margin-top: calc(
+    -1 * (
+      var(--header-height) + var(--main-gap) + var(--stage-height)
+    )
+  );
+  pointer-events: none;
+}
+
+.state-anchor {
+  height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  pointer-events: none;
+}
+
+.stage-section,
+.stage-footer,
+.stage-line {
+  display: none;
+  flex: none;
+  width: 100%;
+  pointer-events: none;
+}
+
+.stage-section > *,
+.stage-footer > * {
+  pointer-events: auto;
+}
+
+/*
+  Reading order of the column. Separator lines are given an order between two
+  of these values by each state, which is what places a line between two
+  blocks without any positioning.
+*/
+.stage-section--hero { order: 10; }
+.stage-section--compass { order: 20; }
+.stage-section--studio { order: 30; }
+.stage-section--horizon { order: 40; }
+.stage-section--founder { order: 50; }
+.stage-section--contact { order: 60; }
+.stage-footer { order: 70; }
+
+.stage-footer {
+  height: var(--footer-height);
+}
+
+/*
+  Separator lines align with the content container rather than the viewport,
+  so they start and end on the same edges as the text above and below them.
+*/
+.stage-line {
+  align-self: center;
+  width: calc(min(100%, var(--content-width)) - var(--gutter) * 2);
+  height: 2px;
+  background: var(--gold-light);
+}
+
+/* Only the active state's blocks take part in the layout. */
+:root[data-landing-step="1"] #hero,
+:root[data-landing-step="1"] #compass,
+:root[data-landing-step="1"] #studio,
+:root[data-landing-step="2"] #compass,
+:root[data-landing-step="2"] #studio,
+:root[data-landing-step="3"] #studio,
+:root[data-landing-step="4"] #studio,
+:root[data-landing-step="4"] #horizon,
+:root[data-landing-step="5"] #horizon,
+:root[data-landing-step="5"] #founder,
+:root[data-landing-step="6"] #founder,
+:root[data-landing-step="6"] #contact,
+:root[data-landing-step="6"] .stage-footer {
+  display: block;
+}
+
+/* ==========================================================
+   SHARED LAYOUT
+   ========================================================== */
+
+.landing-shell {
+  width: min(100%, var(--content-width));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  text-align: center;
+}
+
+.section-label {
+  color: var(--gold-light);
+  font: 400 var(--section-label-size)/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.section-intro__text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.major-message {
+  color: var(--ivory);
+  font: 400 var(--major-size)/1.15 var(--font-serif);
+}
+
+.body-copy {
+  color: var(--ivory);
+  font: 400 var(--body-size)/1.5 var(--font-serif);
+}
+
+/* ==========================================================
+   HERO
+   ========================================================== */
+
+.hero {
+  display: flex;
+  align-items: center;
+}
+
+.hero__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 412px;
+  gap: var(--column-gap);
+  align-items: center;
+}
+
+.hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.hero__label {
+  color: var(--gold-light);
+  font: 400 var(--section-label-size)/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero__title {
+  width: 100%;
+  color: var(--gold-light);
+  font: 400 var(--hero-title-size)/1.25 var(--font-brand);
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.hero__description {
+  color: var(--ivory);
+  font: 400 var(--body-size)/1.5 var(--font-serif);
+  letter-spacing: 0.03em;
+}
+
+.hero__media {
+  display: flex;
+  justify-content: center;
+}
+
+.hero__media img {
+  width: 412px;
+  height: 412px;
+  object-fit: contain;
+}
+
+.landing-line--hero {
+  width: min(707px, 100%);
+  height: 2px;
+  background: var(--gold-light);
+}
+
+/* ==========================================================
+   STUDIO
+   ========================================================== */
+
+.studio__pillars,
+.studio__works {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  padding-inline: 24px;
+}
+
+.pillar,
+.studio-work {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pillar__title {
+  color: var(--gold-light);
+  font: 400 48px/1 var(--font-brand);
+}
+
+.pillar__description,
+.studio-work p,
+.ideas-list li {
+  color: var(--ivory);
+  font: 400 var(--body-size)/1.45 var(--font-serif);
+}
+
+/* A line break authored in Website_Texts.md is kept, so the copy can control
+   where a pillar description wraps. */
+.pillar__description {
+  white-space: pre-line;
+}
+
+.studio__divider {
+  display: grid;
+  gap: 8px;
+  margin-block: 24px;
+}
+
+.studio__divider span {
+  display: block;
+  height: 2px;
+  background: var(--gold-light);
+}
+
+.ideas-list {
+  display: grid;
+  gap: 24px;
+}
+
+.ideas-list li {
+  position: relative;
+  padding-inline-start: 24px;
+}
+
+.ideas-list li::before {
+  content: "✦";
+  position: absolute;
+  inset-inline-start: 0;
+  color: var(--gold-light);
+}
+
+.studio-work--tool .studio-work__title {
+  color: var(--gold-light);
+  font: 400 30px/1.1 var(--font-sans);
+}
+
+/* 24px between the parts of the Tool and Worlds subsections. */
+.studio-work--tool,
+.studio-work--ip {
+  gap: 24px;
+}
+
+.studio-work--tool img {
+  width: 238px;
+  height: 337px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.studio-work--ip img {
+  width: 337px;
+  height: 337px;
+  object-fit: contain;
+  align-self: center;
+}
+
+/* ==========================================================
+   FOUNDER
+   ========================================================== */
+
+/*
+  The extra inline padding is the Founder section's own 24px side margin, on
+  top of the shell gutter.
+*/
+.founder {
+  display: grid;
+  grid-template-columns: var(--founder-media-width) minmax(0, 1fr);
+  /*
+    40px rather than the usual 48px column gap: it is what lets the bio column
+    be wide enough for the name to hold one line at two thirds of it.
+  */
+  column-gap: 40px;
+  row-gap: var(--column-gap);
+  align-items: center;
+  padding-inline: calc(var(--gutter) + 24px);
+}
+
+.founder__media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.founder__portrait {
+  width: 332px;
+  height: 456px;
+  border-radius: var(--radius-card);
+  object-fit: cover;
+}
+
+/*
+  A plain list, not a navigation landmark: two external profile links in a
+  biography are not a major navigation region, and marking them up as <nav>
+  put two identically-named landmarks in the accessibility tree.
+*/
+.founder__links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.founder__links--inline {
+  display: none;
+  justify-content: flex-start;
+}
+
+.founder__bio {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/*
+  Name and role read as one unit and share a single measure. The paragraphs
+  below run the full bio width, which is one and a half times this, so the
+  text sets against the name rather than the other way round.
+*/
+.founder__id {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: calc(100% / 1.5);
+}
+
+/* Both sit on one line and share the measure the paragraphs are set against. */
+.founder__name,
+.founder__role {
+  white-space: nowrap;
+}
+
+.founder__name {
+  color: var(--peach);
+  font: 400 var(--major-size)/1.15 var(--font-serif);
+}
+
+/* Tracked to the same width as the name above it. */
+.founder__role {
+  color: var(--gold-light);
+  font: 500 var(--section-label-size)/1.2 var(--font-sans);
+  letter-spacing: 0.15em;
+}
+
+.founder__text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.founder__text p {
+  color: var(--ivory);
+  font: 400 var(--body-size)/1.5 var(--font-serif);
+}
+
+/* ==========================================================
+   CONTACT
+   ========================================================== */
+
+.contact-columns {
+  width: min(100%, var(--content-width));
+  margin-inline: auto;
+  /* The Contact section's own 24px side margin, on top of the shell gutter. */
+  padding-inline: calc(var(--gutter) + 24px);
+  display: grid;
+  grid-template-columns: minmax(0, 565px) minmax(0, 565px);
+  gap: var(--column-gap);
+  /* Top aligned, so "Let's Connect" starts level with the name capsules. */
+  align-items: start;
+  justify-content: center;
+}
+
+.connect-card {
+  width: 100%;
+  max-width: 565px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.connect-card h2 {
+  color: var(--gold-light);
+  font: 400 var(--major-size)/1.15 var(--font-serif);
+}
+
+.connect-card p {
+  color: var(--ivory);
+  font: 400 var(--body-size)/1.5 var(--font-serif);
+}
+
+.contact-form {
+  width: 100%;
+  max-width: 565px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-row {
+  display: flex;
+  gap: 24px;
+}
+
+.form-row .field {
+  flex: 1;
+  min-width: 0;
+}
+
+.field {
+  position: relative;
+}
+
+.field input,
+.field textarea {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 2px solid var(--peach);
+  border-radius: var(--radius-pill);
+  color: var(--peach);
+  font: 500 var(--link-size)/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-align: left;
+  padding: 0 1rem;
+  transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.field input {
+  height: 30px;
+}
+
+.field input:placeholder-shown {
+  text-align: center;
+}
+
+/*
+  Fixed by the author, not the reader: no handle, no scrollbar. main.js grows
+  the box a line at a time as the text runs past the bottom.
+*/
+.field textarea {
+  height: 120px;
+  min-height: 120px;
+  max-height: 300px;
+  border-radius: var(--radius-field);
+  padding: 0.65rem 1rem;
+  line-height: 1.4;
+  resize: none;
+  overflow: hidden;
+}
+
+/* Sits under the box it belongs to. */
+.field__error {
+  margin-top: 8px;
+  color: var(--field-error);
+  font: 400 14px/1.3 var(--font-sans);
+}
+
+.field__error[hidden] {
+  display: none;
+}
+
+.field textarea:placeholder-shown {
+  text-align: center;
+  padding-top: 2.9rem;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--peach);
+  opacity: 0.85;
+}
+
+.field input:hover,
+.field textarea:hover {
+  border-color: var(--gold-light);
+  background: rgb(242 214 138 / 0.08);
+  color: var(--gold-light);
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--gold-dark);
+  box-shadow: 0 0 0 4px rgb(191 148 64 / 0.22);
+}
+
+.field.is-filled input,
+.field.is-filled textarea {
+  background: rgb(57 126 230 / 0.05);
+  border-color: var(--field-filled);
+  color: var(--ivory);
+}
+
+.field.is-error input,
+.field.is-error textarea {
+  background: rgb(242 131 122 / 0.05);
+  border-color: var(--field-error);
+  color: var(--field-error);
+}
+
+.contact-form__foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.contact-form__status {
+  flex: 1;
+  color: var(--ivory);
+  font: 400 14px/1.3 var(--font-sans);
+}
+
+.contact-form__status[data-state="error"] {
+  color: var(--field-error);
+}
+
+.contact-form__status[data-state="success"] {
+  color: var(--gold-light);
+}
+
+/* ==========================================================
+   BUTTONS
+   ========================================================== */
+
+.btn {
+  min-width: 120px;
+  height: 30px;
+  padding-inline: 1.1rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--peach);
+  color: var(--midnight);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 500 var(--link-size)/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--gold-light);
+}
+
+/* ==========================================================
+   STAGE FOOTER
+   ========================================================== */
+
+.site-footer__inner {
+  width: min(100%, var(--content-width));
+  height: 100%;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-footer__logo {
+  justify-self: start;
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.site-footer__logo img {
+  width: auto;
+  height: 60px;
+}
+
+.site-footer__linkedin {
+  justify-self: center;
+}
+
+.site-footer__legal {
+  justify-self: end;
+  color: var(--peach);
+  font: 500 14px/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+}
+
+/* ==========================================================
+   DESKTOP STATE COMPOSITIONS
+   width >= 1200px, height >= 900px
+
+   Each state only declares which blocks take part and where the separator
+   lines sit between them. The stage handles the spacing.
+   ========================================================== */
+
+@media (min-width: 1200px) and (min-height: 900px) {
+  /* State 01: Hero + Compass + Separator + Studio pillars */
+  :root[data-landing-step="1"] .stage-line--a {
+    display: block;
+    order: 25;
   }
-  .site-footer__logo,.site-footer__linkedin,.site-footer__legal{justify-self:center}
+
+  :root[data-landing-step="1"] .stage-section--studio .studio__divider,
+  :root[data-landing-step="1"] .stage-section--studio .studio__works {
+    display: none;
+  }
+
+  /* State 02: Compass + Separator + Studio */
+  :root[data-landing-step="2"] .stage-line--a {
+    display: block;
+    order: 25;
+  }
+
+  /* State 03: Separator + Studio + Separator */
+  :root[data-landing-step="3"] .stage-section--studio .studio__divider {
+    margin-block: 68px;
+  }
+
+  :root[data-landing-step="3"] .stage-line--a {
+    display: block;
+    order: 25;
+  }
+
+  :root[data-landing-step="3"] .stage-line--b {
+    display: block;
+    order: 35;
+  }
+
+  /* State 04: Studio works + Separator + Horizon + Separator */
+  :root[data-landing-step="4"] .stage-section--studio .studio__pillars {
+    display: none;
+  }
+
+  :root[data-landing-step="4"] .stage-section--studio .studio__divider {
+    margin-block: 0 24px;
+  }
+
+  :root[data-landing-step="4"] .stage-line--a {
+    display: block;
+    order: 35;
+  }
+
+  :root[data-landing-step="4"] .stage-line--b {
+    display: block;
+    order: 45;
+  }
+
+  /* State 05: Separator + Horizon + Separator + Founder */
+  :root[data-landing-step="5"] .stage-line--a {
+    display: block;
+    order: 35;
+  }
+
+  :root[data-landing-step="5"] .stage-line--b {
+    display: block;
+    order: 45;
+  }
+
+  /* State 06: Founder + Separator + Contact + Footer */
+  :root[data-landing-step="6"] .stage-line--a {
+    display: block;
+    order: 55;
+  }
+
+  /*
+    The Footer holds the bottom of the stage while the message box grows.
+
+    The separator carries the 64px of clear space above and below its rule
+    inside its own box rather than taking it from the stage's row gap, and
+    that box is the only item here allowed to shrink. So the space either side
+    of the separator is what gives way as Contact gets taller, and the Founder,
+    the Contact block and the Footer all stay where they are.
+  */
+  :root[data-landing-step="6"] .landing-stage {
+    row-gap: 0;
+  }
+
+  :root[data-landing-step="6"] .stage-line--a {
+    flex: 0 1 calc(var(--section-gap) * 2 + 2px);
+    /* 24px of clear space either side of the rule is the floor. */
+    min-height: calc(24px * 2 + 2px);
+    height: auto;
+    background:
+      linear-gradient(var(--gold-light), var(--gold-light))
+      center / 100% 2px no-repeat;
+  }
+
+  /*
+    The space above the Footer is the first to be spent. The Footer is pinned
+    to the bottom of the stage, so the gap here is whatever the state leaves
+    over, and it closes to this floor before the separator gives up any of its
+    own space.
+  */
+  :root[data-landing-step="6"] .stage-section--contact {
+    margin-bottom: 24px;
+  }
+
+  :root[data-landing-step="6"] .stage-footer {
+    margin-top: auto;
+  }
 }
 
 /* ==========================================================
-   Home
+   LAPTOP STATE COMPOSITIONS
+   width >= 1200px, height < 900px
+
+   The Laptop states use a smaller type scale and a different set of blocks
+   than Desktop, so the membership corrections come first.
    ========================================================== */
-.hero{
-  padding-block:clamp(4rem,11vw,7.5rem) clamp(2.5rem,7vw,4.5rem);
-  text-align:center;
-}
-.hero__title{
-  font-family:var(--font-brand);
-  font-weight:400;
-  font-size:var(--fs-h1);
-  line-height:1.16;
-  letter-spacing:-.01em;
-  color:var(--gold-light);
-  /* No ch cap: the reference sets this on one line at the 1200px design
-     width, so it should only wrap where the viewport genuinely can't fit
-     it. text-wrap:balance still keeps a natural break if it does wrap. */
-  max-width:100%;
-  margin-inline:auto;
-  text-wrap:balance;
-}
-/* Each phrase illuminates on its own slow, staggered cycle — a gentle
-   brightness/glow pulse, not a layout change, so type and spacing stay
-   exactly as specified.
-   text-shadow is static, not animated: animating its blur radius forces a
-   repaint every frame on three staggered elements at once, which competes
-   with the stardust-trail canvas and star-twinkle layers for main-thread
-   time and intermittently drops frames (visible as a jump rather than a
-   smooth step). opacity is compositor-only and doesn't have this problem;
-   since opacity still applies to the whole element, the fixed glow still
-   dims and brightens along with the text, keeping the same illuminated
-   character without repainting the shadow itself. */
-.hero__phrase{
-  display:inline-block;
-  text-shadow:0 0 22px rgba(242,214,138,.5);
-  animation:heroIlluminate 4.2s ease-in-out infinite;
-}
-.hero__phrase--1{animation-delay:0s}
-.hero__phrase--2{animation-delay:1.1s}
-.hero__phrase--3{animation-delay:2.2s}
-@keyframes heroIlluminate{
-  0%,100%{opacity:.74}
-  50%{opacity:1}
-}
-@media (prefers-reduced-motion:reduce){
-  .hero__phrase{animation:none;opacity:1}
-}
 
-/* Asymmetrical editorial rhythm: Studio left, Compass offset right,
-   Horizon back to the left. Flexbox alignment, not absolute positioning,
-   so the rhythm survives at every width without screenshot coordinates. */
-.home-cards{
-  display:flex;
-  flex-direction:column;
-  gap:clamp(3.5rem,9vw,7rem);
-  padding-block:clamp(2rem,6vw,3rem) clamp(5rem,11vw,8.5rem);
-}
-.home-card{width:100%;max-width:640px}
-.home-card:nth-child(1){align-self:flex-start}
-.home-card:nth-child(2){align-self:flex-end}
-.home-card:nth-child(3){align-self:flex-start}
-.home-card__title{
-  font-family:var(--font-sans);
-  font-weight:600;
-  font-size:var(--fs-h3);
-  color:var(--gold-light);
-  margin-bottom:1rem;
-}
-.home-card p{
-  font-family:var(--font-serif);
-  font-weight:400;
-  font-size:var(--fs-body);
-  line-height:1.5;
-  color:var(--ivory);
-}
-.home-card p+p{margin-top:1.15em}
+@media (min-width: 1200px) and (max-height: 899px) {
+  /*
+    01 Hero + Compass          -> Studio out
+    04 Horizon + Founder       -> Studio out, Founder in
+    05 Founder                 -> Horizon out
+    06 Contact + Footer        -> Founder out
+  */
+  :root[data-landing-step="1"] #studio,
+  :root[data-landing-step="4"] #studio,
+  :root[data-landing-step="5"] #horizon,
+  :root[data-landing-step="6"] #founder {
+    display: none;
+  }
 
-/* ==========================================================
-   Contact — Founder
-   ========================================================== */
-.founder{
-  /* 1200px page width, 20px left/right margin each side = 1160px usable
-     for "322 + 20 + 818". max-width must be the full 1200 here, with the
-     20px padding below carving out that 1160px — capping max-width at
-     1160 directly double-subtracted the margin and quietly shrank both
-     columns ~40px below their spec'd sizes. */
-  max-width:1200px;
-  margin-inline:auto;
-  padding:var(--gutter);
-  display:grid;
-  grid-template-columns:minmax(220px,322px) minmax(0,818px);
-  gap:20px;
-  align-items:center;
-  min-height:720px;
-}
-.founder__aside{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:24px;
-  text-align:center;
-}
-.founder__portrait{
-  width:322px;height:456px;max-width:100%;
-  border-radius:var(--radius-card);
-  object-fit:cover;
-}
-.founder__links{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+  :root[data-landing-step="4"] #founder {
+    display: block;
+  }
 
-.founder__card{
-  width:100%;
-  min-height:678px;
-  display:flex;flex-direction:column;justify-content:center;
-  gap:20px;
-}
-.founder__card h2{
-  font-family:var(--font-serif);font-weight:400;
-  font-size:var(--fs-h2);line-height:1.15;
-  color:var(--peach);
-}
-.founder__role{
-  font-family:var(--font-sans);font-weight:500;
-  font-size:var(--fs-h3);
-  letter-spacing:var(--ls-wider);
-  text-transform:uppercase;
-  color:var(--gold-light);
-}
-.founder__card p:not(.founder__role){
-  font-family:var(--font-serif);font-weight:400;
-  font-size:var(--fs-body);line-height:1.5;
-  color:var(--ivory);
-}
-.founder__card p+p{margin-top:1.15em}
+  /* State 02: Compass + Separator + Studio pillars */
+  :root[data-landing-step="2"] .stage-line--a {
+    display: block;
+    order: 25;
+  }
 
-@media (max-width:900px){
-  .founder{grid-template-columns:1fr;min-height:0;padding-block:2.5rem}
-  .founder__card{min-height:0}
+  :root[data-landing-step="2"] .stage-section--studio .studio__divider,
+  :root[data-landing-step="2"] .stage-section--studio .studio__works {
+    display: none;
+  }
+
+  /* State 04: Horizon + Separator + Founder preview */
+  :root[data-landing-step="4"] .stage-line--a {
+    display: block;
+    order: 45;
+  }
+
+  :root[data-landing-step="4"] .founder__portrait {
+    width: 246px;
+    height: 348px;
+  }
+
+  :root[data-landing-step="4"] .founder__links--aside {
+    display: none;
+  }
+
+  :root[data-landing-step="4"] .founder__text p:nth-child(n + 2) {
+    display: none;
+  }
+
+  :root[data-landing-step="4"] .founder__links--inline {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  /* State 05: Separator + full Founder + Separator */
+  :root[data-landing-step="5"] .stage-line--a {
+    display: block;
+    order: 45;
+  }
+
+  :root[data-landing-step="5"] .stage-line--b {
+    display: block;
+    order: 55;
+  }
+
+  /* State 06: Separator + Contact + Footer */
+  :root[data-landing-step="6"] .stage-line--a {
+    display: block;
+    order: 55;
+  }
+
+  /* The Footer is pinned to the bottom of the stage on Laptop. */
+  :root[data-landing-step="6"] .stage-footer {
+    margin-top: auto;
+  }
 }
 
 /* ==========================================================
-   Contact — Contact section (card + form)
-   565 + 30 + 565 = 1160, inside 1200 with 20px outer margins.
-   Same fix as .founder: max-width is the full 1200, not the already-
-   reduced 1160 — the 20px padding is what carves out the 1160 usable
-   width for the two columns.
+   PUBLISHING PAGE
    ========================================================== */
-.contact-columns{
-  max-width:1200px;
-  margin-inline:auto;
-  padding:var(--gutter);
-  padding-block:50px;
-  display:grid;
-  grid-template-columns:minmax(0,565px) minmax(0,565px);
-  /* Grid rows stretch to their tallest item by default, which was pulling
-     the 228px-tall connect-card up to match the taller form column. Start-
-     align both columns so each keeps its own natural height instead. */
-  align-items:start;
-  justify-content:center;
-  gap:30px;
-}
-@media (max-width:1180px){
-  .contact-columns{grid-template-columns:minmax(0,565px);justify-items:center}
+
+.publishing-body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Unlike the Founder card, Website.txt gives this card only a horizontal
-   margin (20px) and a "Between Text Margin" of 10px — no top/bottom
-   padding value — so height comes from a fixed 228px box with the content
-   centred inside it, not from vertical padding stacked on top of it. */
-.connect-card{
-  width:100%;max-width:565px;min-height:228px;
-  padding-block:0;
-  padding-inline:20px;
-  display:flex;flex-direction:column;justify-content:center;
-  gap:10px;
-}
-.connect-card h2{
-  font-family:var(--font-serif);font-weight:400;
-  font-size:var(--fs-h2);line-height:1.15;
-  color:var(--gold-light);
-}
-.connect-card p{
-  font-family:var(--font-serif);font-weight:400;
-  font-size:var(--fs-body);line-height:1.5;
-  color:var(--ivory);
+/*
+  flex: 1 makes the main region absorb whatever the header and footer do not
+  use, so the footer sits at the bottom without assuming a footer height.
+*/
+.publishing-page {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 48px var(--gutter);
 }
 
-.contact-form{width:100%;max-width:565px;display:flex;flex-direction:column;gap:24px}
-.form-row{display:flex;gap:24px}
-.form-row .field{flex:1;min-width:0}
-
-/* Labels are visually hidden (.vh, in the markup) — the visual design
-   specifies placeholder-only fields with no separate label row, but a
-   placeholder is not an accessible name, so a real <label> is kept for
-   assistive tech without changing what's on screen. */
-.field{position:relative}
-.field input,.field textarea{
-  display:block;width:100%;
-  background:var(--glass-fill);
-  -webkit-backdrop-filter:blur(var(--glass-blur));
-  backdrop-filter:blur(var(--glass-blur));
-  border:2px solid var(--peach);
-  border-radius:var(--radius-pill);
-  color:var(--peach);
-  font-family:var(--font-sans);font-weight:500;font-size:var(--fs-link);
-  letter-spacing:var(--ls-wide);
-  /* Idle/placeholder state reads centred (matches the reference); once
-     real text is typed it left-aligns like a normal field. Both states
-     share the same box, so this never shifts the visible idle look. */
-  text-align:left;
-  height:30px;
-  padding:0 1rem;
-  transition:border-color .2s ease,color .2s ease,box-shadow .2s ease,background-color .2s ease;
-}
-.field input:placeholder-shown{text-align:center}
-.field textarea{
-  height:120px;
-  border-radius:var(--radius-field);
-  padding:.65rem 1rem;
-  resize:vertical;
-  line-height:1.4;
-  text-align:left;
-}
-/* MESSAGE placeholder centres both horizontally and vertically inside its
-   120px box; once the user types, real text reverts to a normal top-left
-   multi-line start (the non-:placeholder-shown rule above). */
-.field textarea:placeholder-shown{
-  text-align:center;
-  padding-top:2.9rem;
-}
-.field input::placeholder,.field textarea::placeholder{color:var(--peach);opacity:.85}
-.field input:hover,.field textarea:hover{
-  border-color:var(--gold-light);
-  background:rgba(242,214,138,.08);
-  color:var(--gold-light);
-}
-.field input:hover::placeholder,.field textarea:hover::placeholder{color:var(--gold-light)}
-.field input:focus,.field textarea:focus{
-  outline:none;
-  border-color:var(--gold-dark);
-  box-shadow:0 0 0 4px rgba(191,148,64,.22);
-}
-.field.is-filled input,.field.is-filled textarea{
-  background:var(--field-filled-fill);
-  border-color:var(--field-filled);
-  color:var(--ivory);
-}
-.field.is-filled input::placeholder,.field.is-filled textarea::placeholder{color:var(--ivory)}
-.field.is-error input,.field.is-error textarea{
-  background:var(--field-error-fill);
-  border-color:var(--field-error);
-  color:var(--field-error);
-}
-.field.is-error input::placeholder,.field.is-error textarea::placeholder{color:var(--field-error)}
-.js .field.is-error input,.js .field.is-error textarea{animation:fieldErrorPulse .5s ease;}
-@keyframes fieldErrorPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(242,131,122,0)}
-  35%{box-shadow:0 0 0 5px rgba(242,131,122,.28)}
-}
-@media (prefers-reduced-motion:reduce){
-  .js .field.is-error input,.js .field.is-error textarea{animation:none}
-}
-.field__error{
-  display:none;margin-top:.4rem;
-  font-family:var(--font-sans);font-size:var(--fs-small);color:var(--field-error);
-}
-.field.is-error .field__error{display:block}
-
-.contact-form__foot{display:flex;align-items:center;justify-content:flex-end;gap:1rem}
-.contact-form__status{
-  margin:0;flex:1;
-  font-family:var(--font-sans);font-size:var(--fs-small);
-  color:var(--ivory);
-}
-.contact-form__status[data-state="error"]{color:var(--field-error)}
-.contact-form__status[data-state="success"]{color:var(--gold-light)}
-.contact-form__submit{align-self:flex-end}
-.contact-form__submit:disabled{opacity:.6;cursor:progress}
-
-/* ==========================================================
-   Publishing
-   ========================================================== */
-.publishing{
-  min-height:calc(100svh - var(--header-h) - var(--footer-h));
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;
-  padding-block:4rem;
-}
-.publishing h1{
-  font-family:var(--font-brand);font-weight:400;
-  font-size:var(--fs-h1);
-  color:var(--gold-light);
+.publishing-placeholder__title {
+  width: 100%;
+  max-width: 1100px;
+  color: var(--gold-light);
+  font: 400 var(--hero-title-size)/1.25 var(--font-brand);
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-wrap: balance;
 }
 
-/* ---------- Reveal ---------- */
-.js .reveal{opacity:0;transform:translateY(14px)}
-.js .reveal.is-in{
-  opacity:1;transform:none;
-  transition:opacity .75s cubic-bezier(.22,.61,.36,1),transform .75s cubic-bezier(.22,.61,.36,1);
+/*
+  display:flex stretches .site-footer__inner to the footer's height. Its
+  height:100% only resolves against a parent with a definite height, which the
+  stage footer on Home has and this one does not, so without this the contents
+  sat 20px higher here than on Home.
+*/
+.publishing-footer {
+  position: relative;
+  display: flex;
+  min-height: var(--footer-height);
 }
-/* Above-the-fold content marked .reveal--eager in the HTML paints
-   immediately — it never starts at opacity:0, so it doesn't wait on
-   main.js (deferred, fetched separately) to become visible/LCP-eligible.
-   main.js's own "already visible" check still adds .is-in to these
-   elements on load, which is a harmless no-op here since the end state
-   (opacity:1, no transform) already matches. Non-critical/below-the-fold
-   .reveal content is untouched and still fades in on scroll as before. */
-.js .reveal.reveal--eager{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  .js .reveal{opacity:1;transform:none}
-  .js .reveal.is-in{transition:none}
+
+/* A flex item only stretches when its cross size is auto, and the shared rule
+   sets height:100%. Releasing it here lets the row fill the footer. */
+.publishing-footer .site-footer__inner {
+  height: auto;
 }
 
 /* ==========================================================
-   Page transitions — short slide in/out of the inner content only.
-   main.js toggles these classes on <main>, never on <body>: the
-   starfield background, header and footer are outside <main> and are
-   never touched, so they stay put and never flash/disappear between
-   pages. A plain link click always works even with JS disabled — this
-   is progressive enhancement only.
+   TABLET / MOBILE
    ========================================================== */
-.js main{transition:opacity .32s cubic-bezier(.22,.61,.36,1),transform .32s cubic-bezier(.22,.61,.36,1)}
-.js main.page-enter{opacity:0;transform:translateY(12px)}
-.js main.page-exit{opacity:0;transform:translateY(-12px)}
-@media (prefers-reduced-motion:reduce){
-  .js main{transition:none}
-  .js main.page-enter,.js main.page-exit{opacity:1;transform:none}
+
+@media (max-width: 1199px) {
+  :root {
+    --header-height: 76px;
+  }
+
+  html {
+    scroll-snap-type: none;
+  }
+
+  .site-header__nav {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .mobile-nav[hidden] {
+    display: none;
+  }
+
+  .mobile-nav:not([hidden]) {
+    position: absolute;
+    top: var(--header-height);
+    right: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background: var(--midnight);
+    border: 1px solid var(--gold-light);
+  }
+
+  .mobile-nav a {
+    color: var(--peach);
+    font: 500 var(--link-size)/1.2 var(--font-sans);
+    letter-spacing: 0.1em;
+    text-decoration: none;
+  }
+
+  .landing-stage {
+    position: relative;
+    top: auto;
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .stage-canvas {
+    display: block;
+    min-height: 0;
+    transform: none;
+  }
+
+  .state-track {
+    display: none;
+  }
+
+  .stage-section {
+    display: block;
+    min-height: 100svh;
+    padding-block: 48px;
+  }
+
+  .stage-section--hero {
+    padding-top: 24px;
+  }
+
+  .hero__grid,
+  .founder,
+  .contact-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .founder__id {
+    width: 100%;
+  }
+
+  .founder__name,
+  .founder__role {
+    white-space: normal;
+  }
+
+  .hero__media {
+    order: -1;
+  }
+
+  .hero__media img {
+    width: min(70vw, 412px);
+    height: auto;
+  }
+
+  .studio__pillars,
+  .studio__works {
+    grid-template-columns: 1fr;
+  }
+
+  .stage-footer {
+    display: block;
+    height: auto;
+    min-height: var(--footer-height);
+  }
+
+  .stage-line {
+    display: none;
+  }
 }
 
-/* ---------- Print ---------- */
-@media print{
-  .site-header,.page-bg,.stardust-trail{display:none}
-  body{background:#fff;color:#000}
-  .glass{background:#fff;color:#000;border:1px solid #ccc}
-  .hero__title,.founder__card h2,.connect-card h2,.publishing h1{color:#000}
-  a{text-decoration:underline}
+@media (max-width: 767px) {
+  :root {
+    --gutter: 20px;
+    --hero-title-size: 42px;
+    --major-size: 36px;
+    --section-label-size: 18px;
+    --body-size: 18px;
+  }
+
+  .hero__text {
+    gap: 48px;
+  }
+
+  .hero__content {
+    gap: 32px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .site-footer__inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding-block: 24px;
+  }
+
+  .site-footer__logo,
+  .site-footer__linkedin,
+  .site-footer__legal {
+    justify-self: center;
+  }
+}
+
+/* ==========================================================
+   REDUCED MOTION
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .page-bg__stars,
+  .page-bg__stars::before,
+  .page-bg__stars::after {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================
+   NO-JS / JS-FAILURE FALLBACK
+
+   Nothing sets data-landing-step if the script never runs, so without this
+   every section would stay display:none and the page would render empty.
+   Last in the file so it outranks the state compositions.
+   ========================================================== */
+
+:root:not(.js) .landing-stage {
+  position: static;
+  display: block;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+:root:not(.js) .stage-canvas {
+  display: block;
+  min-height: 0;
+  transform: none;
+}
+
+:root:not(.js) .state-track,
+:root:not(.js) .stage-line {
+  display: none;
+}
+
+:root:not(.js) #hero,
+:root:not(.js) #compass,
+:root:not(.js) #studio,
+:root:not(.js) #horizon,
+:root:not(.js) #founder,
+:root:not(.js) #contact {
+  display: block;
+  min-height: 100svh;
+  padding-block: 48px;
+}
+
+:root:not(.js) .stage-footer {
+  display: block;
+  height: auto;
+  min-height: var(--footer-height);
 }
