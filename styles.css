@@ -381,6 +381,11 @@ a {
   object-fit: contain;
 }
 
+/* One lockup or the other, never both. Mobile uses the single-line mark. */
+.site-header__logo-narrow {
+  display: none;
+}
+
 .site-header__logo:hover {
   filter: drop-shadow(0 0 10px rgb(242 214 138 / 0.55)) brightness(1.08);
 }
@@ -746,6 +751,28 @@ a {
    where a pillar description wraps. */
 .pillar__description {
   white-space: pre-line;
+}
+
+/*
+  The Studio's own title, the second double rule and the Founder's short
+  statement all belong to the Tablet and Mobile layouts. Desktop and Laptop
+  never show them.
+*/
+.studio__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.studio__divider--b,
+.founder__mobile-text {
+  display: none;
 }
 
 .studio__divider {
@@ -1138,13 +1165,13 @@ a {
 
 /* ==========================================================
    DESKTOP STATE COMPOSITIONS
-   width >= 1200px, height >= 900px
+   width >= 1200px, height >= 1250px
 
    Each state only declares which blocks take part and where the separator
    lines sit between them. The stage handles the spacing.
    ========================================================== */
 
-@media (min-width: 1200px) and (min-height: 900px) {
+@media (min-width: 1200px) and (min-height: 1250px) {
   /* State 01: Hero + Compass + Separator + Studio pillars */
   :root[data-landing-step="1"] .stage-line--a {
     display: block;
@@ -1253,13 +1280,14 @@ a {
 
 /* ==========================================================
    LAPTOP STATE COMPOSITIONS
-   width >= 1200px, height < 900px
+   width >= 1200px, height < 1250px
 
-   The Laptop states use a smaller type scale and a different set of blocks
-   than Desktop, so the membership corrections come first.
+   The Laptop states use a different set of blocks than Desktop, so the
+   membership corrections come first. Two width-and-height cases layer their
+   own spacing on top of this base; see the two blocks that follow.
    ========================================================== */
 
-@media (min-width: 1200px) and (max-height: 899px) {
+@media (min-width: 1200px) and (max-height: 1249px) {
   /*
     01 Hero + Compass          -> Studio out
     04 Horizon + Founder       -> Studio out, Founder in
@@ -1332,6 +1360,39 @@ a {
   /* The Footer is pinned to the bottom of the stage on Laptop. */
   :root[data-landing-step="6"] .stage-footer {
     margin-top: auto;
+  }
+}
+
+/* ==========================================================
+   LAPTOP BASE - 1440 x 1024 CASE
+   width >= 1440px, 900px <= height < 1250px
+
+   The Laptop composition with one change: State 03 opens the Studio's
+   internal rhythm out to 68px.
+   ========================================================== */
+
+@media (min-width: 1440px) and (min-height: 900px) and (max-height: 1249px) {
+  :root[data-landing-step="3"] .stage-section--studio .studio__divider {
+    margin-block: 68px;
+  }
+}
+
+/* ==========================================================
+   LAPTOP BASE - 1440 x 864 CASE
+   width >= 1440px, height < 900px
+
+   The Laptop composition on a tighter rhythm. The Studio's own 24px internal
+   gap is already the base value, so it is not restated here.
+   ========================================================== */
+
+@media (min-width: 1440px) and (max-height: 899px) {
+  :root {
+    --main-gap: 24px;
+    --section-gap: 48px;
+  }
+
+  .hero__text {
+    gap: 48px;
   }
 }
 
@@ -1447,20 +1508,116 @@ a {
     display: none;
   }
 
-  .stage-section {
-    display: block;
-    min-height: 100svh;
-    padding-block: 48px;
+  /*
+    One continuous scrolling page. Sections take their natural height and sit
+    on a 24px rhythm; each boundary is drawn as a rule on the section below it
+    rather than as a separate element, because the flow needs five separators
+    and the state machine only ever had two.
+  */
+  .stage-canvas {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  .stage-section--hero {
+  .stage-section {
+    display: block;
+    min-height: 0;
+    padding-block: 0;
+  }
+
+  #compass,
+  #studio,
+  #horizon,
+  #founder,
+  #contact {
+    border-top: 2px solid var(--gold-light);
     padding-top: 24px;
   }
 
-  .hero__grid,
-  .founder,
-  .contact-columns {
-    grid-template-columns: 1fr;
+  .stage-line,
+  .landing-line--hero {
+    display: none;
+  }
+
+  /* Hero reads label, then image, then the message and description. */
+  .hero {
+    display: block;
+  }
+
+  .hero__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 64px;
+  }
+
+  .hero__text {
+    display: contents;
+  }
+
+  .hero__label { order: 1; }
+  .hero__media { order: 2; }
+  .hero__content { order: 3; }
+
+  .hero__media img {
+    width: min(70vw, 412px);
+    height: auto;
+  }
+
+  /* The Studio pairs each pillar with its own work, so both wrappers flatten
+     into one grid and every piece is placed by hand. */
+  .studio__title {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    color: var(--gold-light);
+    font: 400 var(--section-label-size)/1.2 var(--font-sans);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .studio__divider--b {
+    display: grid;
+  }
+
+  #studio .landing-shell {
+    display: grid;
+    column-gap: 24px;
+    row-gap: 24px;
+    align-items: center;
+  }
+
+  .studio__pillars,
+  .studio__works,
+  .studio-work--tool,
+  .studio-work--ip {
+    display: contents;
+  }
+
+  .studio__title {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .studio__divider--a,
+  .studio__divider--b {
+    grid-column: 1 / -1;
+  }
+
+  .studio__divider {
+    margin-block: 0;
+  }
+
+  /* Only the pillar copy and the tool's own name are used here. */
+  .studio-work--tool > p,
+  .studio-work--ip > p {
+    display: none;
   }
 
   .founder__id {
@@ -1472,18 +1629,24 @@ a {
     white-space: normal;
   }
 
-  .hero__media {
-    order: -1;
+  .founder__links--aside {
+    display: none;
   }
 
-  .hero__media img {
-    width: min(70vw, 412px);
+  .founder__links--inline {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Contact stacks, and the form sits in its own narrower measure. */
+  .contact-columns {
+    display: block;
     height: auto;
   }
 
-  .studio__pillars,
-  .studio__works {
-    grid-template-columns: 1fr;
+  .connect-card,
+  .contact-form {
+    max-width: none;
   }
 
   .stage-footer {
@@ -1491,29 +1654,361 @@ a {
     height: auto;
     min-height: var(--footer-height);
   }
+}
 
-  .stage-line {
+/* ==========================================================
+   TABLET
+   768px - 1199px wide
+
+   A continuous scrolling page. The Header keeps its full navigation; the
+   Studio and the Founder pair their pieces into two columns.
+   ========================================================== */
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  /* No hamburger here - the full navigation still fits. */
+  .site-header__nav {
+    display: flex;
+  }
+
+  .menu-toggle,
+  .mobile-nav {
     display: none;
   }
+
+  /* ---- Studio ---- */
+  #studio .landing-shell {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Unique Ideas: copy on the left, the four ideas on the right. */
+  .pillar:nth-of-type(1) {
+    grid-column: 1;
+    grid-row: 2;
+    text-align: right;
+  }
+
+  .studio-work--ideas {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .studio__divider--a {
+    grid-row: 3;
+  }
+
+  /* Useful Tools: the cover on the left, its copy and name on the right. */
+  .studio-work--tool img {
+    grid-column: 1;
+    grid-row: 4 / span 2;
+    width: 141px;
+    height: 200px;
+    justify-self: center;
+  }
+
+  .pillar:nth-of-type(2) {
+    grid-column: 2;
+    grid-row: 4;
+    align-self: end;
+  }
+
+  .studio-work--tool .studio-work__title {
+    grid-column: 2;
+    grid-row: 5;
+    align-self: start;
+  }
+
+  .studio__divider--b {
+    grid-row: 6;
+  }
+
+  /* Original Worlds: copy on the left, artwork on the right. */
+  .pillar:nth-of-type(3) {
+    grid-column: 1;
+    grid-row: 7;
+    text-align: right;
+  }
+
+  .studio-work--ip img {
+    grid-column: 2;
+    grid-row: 7;
+    width: 170px;
+    height: auto;
+    justify-self: start;
+  }
+
+  /* ---- Founder ---- */
+  .founder {
+    display: grid;
+    grid-template-columns: 211px minmax(0, 1fr);
+    column-gap: 24px;
+    row-gap: 24px;
+    align-items: start;
+    padding-inline: var(--gutter);
+  }
+
+  .founder__media,
+  .founder__bio,
+  .founder__id,
+  .founder__text {
+    display: contents;
+  }
+
+  .founder__name {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    text-align: center;
+  }
+
+  .founder__portrait {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    width: 211px;
+    height: 298px;
+  }
+
+  .founder__role {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .founder__text p:nth-of-type(1) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .founder__text p:nth-of-type(2) {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  .founder__text p:nth-of-type(3) {
+    grid-column: 1 / -1;
+    grid-row: 5;
+  }
+
+  .founder__links--inline {
+    grid-column: 1 / -1;
+    grid-row: 6;
+  }
+
+  /* ---- Contact ---- */
+  .contact-columns {
+    width: min(100%, 540px);
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+
+  .connect-card {
+    margin-bottom: 24px;
+  }
 }
+
+/* ==========================================================
+   MOBILE
+   up to 767px wide
+
+   The same continuous page as Tablet on a single column, with its own type
+   scale and the supporting copy stripped back to the essentials.
+   ========================================================== */
 
 @media (max-width: 767px) {
   :root {
     --gutter: 20px;
-    --hero-title-size: 42px;
-    --major-size: 36px;
-    --section-label-size: 18px;
+    --hero-title-size: 32px;
+    --major-size: 24px;
+    --section-label-size: 20px;
     --body-size: 18px;
   }
 
-  .hero__text {
+  /* ---- Header ---- */
+  .site-header__logo-wide {
+    display: none;
+  }
+
+  .site-header__logo-narrow {
+    display: block;
+  }
+
+  .menu-toggle span {
+    background: var(--gold-light);
+  }
+
+  /*
+    The open menu covers the page so it stays readable, and the Header sits
+    above it on its own solid ground so nothing shows through behind it.
+  */
+  .mobile-nav:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
+    padding: calc(var(--header-height) + 32px) var(--gutter) var(--gutter);
+    background: var(--midnight);
+    border: 0;
+  }
+
+  .site-header:has(.mobile-nav:not([hidden])) {
+    background: var(--midnight);
+  }
+
+  .mobile-nav a[data-nav-target="contact"] {
+    min-width: 120px;
+    height: 30px;
+    padding-inline: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--peach);
+    color: var(--midnight);
+  }
+
+  /* ---- Hero ---- */
+  .hero__grid {
     gap: 48px;
   }
 
   .hero__content {
-    gap: 32px;
+    gap: 48px;
   }
 
+  .hero__media img {
+    width: 342px;
+    height: 342px;
+  }
+
+  /* ---- Supporting copy the Mobile layout drops ---- */
+  #compass .body-copy,
+  #horizon .body-copy,
+  .connect-card p,
+  .pillar:nth-of-type(1) .pillar__description,
+  .pillar:nth-of-type(2) .pillar__description {
+    display: none;
+  }
+
+  /* ---- Studio: one column ---- */
+  #studio .landing-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .pillar {
+    display: contents;
+  }
+
+  .pillar__title {
+    font-size: 32px;
+  }
+
+  .pillar:nth-of-type(1) .pillar__title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    text-align: left;
+  }
+
+  .studio-work--ideas {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .pillar:nth-of-type(2) .pillar__title {
+    grid-column: 1;
+    grid-row: 5;
+    text-align: left;
+    align-self: end;
+  }
+
+  .studio-work--tool .studio-work__title {
+    grid-column: 1;
+    grid-row: 6;
+    font-size: 20px;
+  }
+
+  .studio-work--tool img {
+    grid-column: 2;
+    grid-row: 5 / span 2;
+    width: 99px;
+    height: 140px;
+    justify-self: end;
+  }
+
+  .pillar:nth-of-type(3) .pillar__title {
+    grid-column: 1 / -1;
+    grid-row: 8;
+    text-align: left;
+  }
+
+  .studio-work--ip img {
+    grid-column: 1;
+    grid-row: 9;
+    width: 140px;
+    height: auto;
+    justify-self: start;
+  }
+
+  .pillar:nth-of-type(3) .pillar__description {
+    grid-column: 2;
+    grid-row: 9;
+    align-self: center;
+    text-align: left;
+  }
+
+  .studio__divider--a { grid-row: 4; }
+  .studio__divider--b { grid-row: 7; }
+
+  /* ---- Founder ---- */
+  .founder {
+    display: block;
+    text-align: center;
+  }
+
+  .founder__media,
+  .founder__bio,
+  .founder__id,
+  .founder__text {
+    display: block;
+  }
+
+  .founder__id {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .founder__name {
+    font-size: 24px;
+  }
+
+  .founder__role {
+    font-size: 14px;
+  }
+
+  .founder__portrait {
+    width: 211px;
+    height: 298px;
+    margin: 24px auto 0;
+  }
+
+  /* The three-paragraph bio gives way to the short studio statement. */
+  .founder__text {
+    display: none;
+  }
+
+  .founder__mobile-text {
+    display: block;
+    margin-top: 24px;
+  }
+
+  .founder__links--inline {
+    margin-top: 24px;
+    justify-content: center;
+  }
+
+  /* ---- Contact ---- */
   .form-row {
     flex-direction: column;
   }

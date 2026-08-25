@@ -83,10 +83,20 @@
         aria-label="North Stardust — Home"
       >
         <img
+          class="site-header__logo-wide"
           src="assets/img/logo-double-line.svg"
           width="240"
           height="100"
           alt="North Stardust"
+          decoding="async"
+        >
+        <img
+          class="site-header__logo-narrow"
+          src="assets/img/logo-single-line.svg"
+          width="240"
+          height="60"
+          alt=""
+          aria-hidden="true"
           decoding="async"
         >
       </a>
@@ -205,7 +215,7 @@
           aria-labelledby="studio-title"
         >
           <div class="landing-shell">
-            <h2 id="studio-title" class="visually-hidden">The Studio</h2>
+            <h2 id="studio-title" class="studio__title">The Studio</h2>
 
             <div class="studio__pillars">
               <article class="pillar">
@@ -235,7 +245,7 @@ Uncover opportunities.</p>
               </article>
             </div>
 
-            <div class="studio__divider" aria-hidden="true">
+            <div class="studio__divider studio__divider--a" aria-hidden="true">
               <span></span>
               <span></span>
             </div>
@@ -280,6 +290,11 @@ Uncover opportunities.</p>
                   decoding="async"
                 >
               </article>
+            </div>
+
+            <div class="studio__divider studio__divider--b" aria-hidden="true">
+              <span></span>
+              <span></span>
             </div>
           </div>
         </section>
@@ -345,6 +360,13 @@ Uncover opportunities.</p>
                   Looking ahead, I aim to build a sustainable studio that can grow beyond a single medium, develop original work, reach new audiences and create lasting value over time.
                 </p>
               </div>
+
+              <p class="founder__mobile-text" data-content="home.about.mobile" data-content-index="1">
+                North Stardust is a new studio in development and serves as my creative lab. It is a space where I explore ideas, give them structure and direction, and allow them room to grow.
+              </p>
+              <p class="founder__mobile-text" data-content="home.about.mobile" data-content-index="2">
+                My aim is to develop original work, reach new audiences, and create lasting value over time.
+              </p>
 
               <ul class="founder__links founder__links--inline">
                 <li><a href="https://www.linkedin.com/in/athanasios-zagkliveris/" target="_blank" rel="noopener noreferrer">LINKEDIN</a></li>

@@ -22,7 +22,7 @@ JavaScript is deliberately limited to behaviour:
     breakpoints: {
       mobile: 768,
       layout: 1200,
-      laptopHeight: 900
+      laptopHeight: 1250
     },
     contentUrl: "assets/Website_Texts.md"
   };
@@ -496,6 +496,7 @@ JavaScript is deliberately limited to behaviour:
     "home.about.text01": ["founder.text_01"],
     "home.about.text02": ["founder.text_02"],
     "home.about.text03": ["founder.text_03"],
+    "home.about.mobile": ["founder.mobile_text"],
 
     "home.contact.title": ["contact.title"],
 

@@ -111,6 +111,12 @@ I am building North Stardust as an independent creative studio focused on explor
 
 Looking ahead, I aim to build a sustainable studio that can grow beyond a single medium, develop original work, reach new audiences and create lasting value over time.
 
+## Mobile Text
+
+North Stardust is a new studio in development and serves as my creative lab. It is a space where I explore ideas, give them structure and direction, and allow them room to grow.
+
+My aim is to develop original work, reach new audiences, and create lasting value over time.
+
 ---
 
 # Contact
