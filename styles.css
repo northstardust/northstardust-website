@@ -1752,7 +1752,7 @@ a {
     grid-row: 4 / span 2;
     width: 141px;
     height: 200px;
-    justify-self: center;
+    justify-self: end;
   }
 
   .pillar:nth-of-type(2) {
@@ -1933,8 +1933,8 @@ a {
   */
   .mobile-nav:not([hidden]) {
     position: absolute;
-    top: var(--header-height);
-    right: calc(var(--gutter) + 24px);
+    top: 0;
+    right: 0;
     left: auto;
     z-index: 1100;
     display: flex;
@@ -2040,18 +2040,29 @@ a {
     text-align: left;
   }
 
+  /*
+    Measured so the line breaks after "Guide": the full "Practical Guide to"
+    needs 167px and "Practical Guide" alone 143px, so a 150px measure puts
+    "to" at the head of the second line.
+  */
   .studio-work--tool .studio-work__title {
     grid-column: 1 / 3;
     grid-row: 6;
+    max-width: 150px;
     font-size: 20px;
   }
 
+  /*
+    Pulled in by one gap, so it sits directly against the copy's column
+    instead of out on the right edge.
+  */
   .studio-work--tool img {
     grid-column: 3;
     grid-row: 5 / span 2;
     width: 99px;
     height: 140px;
-    justify-self: end;
+    justify-self: start;
+    margin-left: -24px;
   }
 
   .pillar:nth-of-type(3) .pillar__title {
