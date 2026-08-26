@@ -29,11 +29,20 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
+  <!--
+    Only the faces this page actually renders. The full set is preloaded on
+    the Home page, which needs all five; this page sets its heading in
+    Cormorant, its body in Spectral and its navigation in Inter 500, and
+    nothing on it is Inter 400 or 600. The consent banner - the one other
+    thing that would call for Inter 400 - is Home-only, gated on the
+    data-analytics attribute that no other page carries.
+
+    Preloading is a hint, not a dependency: a face left out here still loads
+    if something later asks for it.
+  -->
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/cormorant-400.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/spectral-400.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-400.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-500.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-600.woff2" crossorigin>
 
   <link rel="stylesheet" href="styles.css">
   <script>document.documentElement.classList.add("js");</script>
@@ -133,6 +142,8 @@
       >
         LINKEDIN
       </a>
+
+      <a class="site-footer__privacy" href="privacy.html">Privacy Policy</a>
 
       <p class="site-footer__legal" data-content="footer.copyright">© 2026 North Stardust Studio</p>
     </div>

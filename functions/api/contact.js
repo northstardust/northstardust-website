@@ -22,7 +22,23 @@
 // honestly instead of silently swallowing messages.
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_LEN = { firstName: 80, lastName: 80, email: 254, message: 4000 };
+
+// Mirrors namePattern in main.js. The browser's copy is for the person filling
+// the form in; this one is the rule that actually holds, because anything
+// posting straight to this endpoint never runs it. Letters from any script,
+// the marks that accent them, spaces, hyphens, and the apostrophe in both its
+// straight and typographic spellings — so Anne-Marie, O'Connor and O’Connor
+// pass, and @ # $ % & * + / \ and digits do not.
+//
+// Keep the two in step. A rule relaxed here and not there lets bad data in; a
+// rule tightened here and not there rejects a submission the visitor was told
+// was fine, with no way for them to see why.
+const NAME_RE = /^[\p{L}\p{M} '\u2019-]+$/u;
+
+// message is 500 to match MESSAGE_LIMIT in main.js, where the field stops the
+// 501st character from ever being typed. The other three are ceilings the
+// browser does not enforce, so they are the endpoint's own.
+const MAX_LEN = { firstName: 80, lastName: 80, email: 254, message: 500 };
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -63,8 +79,10 @@ export async function onRequestPost({ request, env }) {
   const errors = {};
   if (!firstName) errors.firstName = 'First name is required.';
   else if (firstName.length > MAX_LEN.firstName) errors.firstName = 'First name is too long.';
+  else if (!NAME_RE.test(firstName)) errors.firstName = 'Please enter a valid name.';
   if (!lastName) errors.lastName = 'Last name is required.';
   else if (lastName.length > MAX_LEN.lastName) errors.lastName = 'Last name is too long.';
+  else if (!NAME_RE.test(lastName)) errors.lastName = 'Please enter a valid name.';
   if (!email || !EMAIL_RE.test(email) || email.length > MAX_LEN.email) errors.email = 'A valid email address is required.';
   if (!message) errors.message = 'Message is required.';
   else if (message.length > MAX_LEN.message) errors.message = 'Message is too long.';

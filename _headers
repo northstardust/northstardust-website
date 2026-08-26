@@ -1,6 +1,16 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms 'sha256-WZRJfWvsnNCPcxzZwvyhovnZGqhZaC+8gPGPRbx6wTk=' 'sha256-tFXPUQpS2mJODBzqrGIYgUmSuhDRUswS0+eX3On5pNs=' 'sha256-8GTVh/dBwAsG4IOaUOFxNQAguIjHnCyW+8mgAJ6jRqI='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.clarity.ms; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms 'sha256-WZRJfWvsnNCPcxzZwvyhovnZGqhZaC+8gPGPRbx6wTk='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.clarity.ms; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Cross-Origin-Opener-Policy: same-origin
+
+# Fonts are the only genuinely immutable assets here: five self-hosted woff2
+# files whose contents will not change under the same name. A year, marked
+# immutable, so a repeat visitor never revalidates them.
+#
+# CSS and JS are deliberately left on the default. Their filenames carry no
+# hash, so a long cache would strand visitors on an old stylesheet after a
+# deploy — the one thing that would actually be worth avoiding here.
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

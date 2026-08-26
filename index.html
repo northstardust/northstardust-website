@@ -33,6 +33,52 @@
   <meta property="og:image" content="https://northstardust.studio/assets/img/og-image.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
+  <!--
+    The studio and the person behind it, stated once so search engines can tie
+    the site, the LinkedIn page and the ArtStation profile to one entity rather
+    than guessing.
+
+    Only the profiles this project actually links to are listed. sameAs is a
+    claim of identity, and a wrong or dead URL in it is worse than a short list.
+    Descriptions are the site's own words, not new copy written for robots.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://northstardust.studio/#organization",
+        "name": "North Stardust",
+        "url": "https://northstardust.studio/",
+        "logo": "https://northstardust.studio/assets/img/logo-double-line.svg",
+        "description": "North Stardust is an independent creative studio and a home for original ideas, worlds, tools and publications.",
+        "sameAs": [
+          "https://www.linkedin.com/company/northstardust"
+        ],
+        "founder": {
+          "@id": "https://northstardust.studio/#athanasios-zagkliveris"
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://northstardust.studio/#athanasios-zagkliveris",
+        "name": "Athanasios Zagkliveris",
+        "jobTitle": "Founder & Creative Director",
+        "description": "Founder and Creative Director of North Stardust, with a background in engineering, 3D art and digital production.",
+        "url": "https://northstardust.studio/#founder",
+        "sameAs": [
+          "https://www.linkedin.com/in/athanasios-zagkliveris/",
+          "https://thanosgaz.artstation.com/"
+        ],
+        "worksFor": {
+          "@id": "https://northstardust.studio/#organization"
+        }
+      }
+    ]
+  }
+  </script>
+
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -46,25 +92,25 @@
   <link rel="stylesheet" href="styles.css">
   <script>document.documentElement.classList.add("js");</script>
 
-  <script>
-    (function(c,l,a,r,i,t,y){
-      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "y0ykuly2si");
-  </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KX169TMJTF"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-KX169TMJTF');
-  </script>
+  <!--
+    No analytics here. Google Analytics and Microsoft Clarity are not loaded
+    by the page at all - main.js injects them, and only after the visitor has
+    said yes. Setting a tag here would put them back in front of that choice.
+
+    Their origins stay in the CSP in _headers, because that is where they are
+    fetched from once consent is given.
+  -->
 
   <script src="main.js" defer></script>
 </head>
 
-<body>
+<!--
+  data-analytics marks this as the one page that measures anything. The consent
+  module reads it: the question is only asked where there is something to ask
+  about, and a stored yes only loads the tags here. Removing the attribute is
+  all it takes to stop this page measuring.
+-->
+<body data-analytics>
   <a class="skip-link" href="#main-content">Skip to content</a>
 
   <!-- Shared page background. It scrolls with the document and is never fixed. -->
@@ -75,6 +121,27 @@
   </div>
 
   <header class="site-header" data-site-header>
+
+    <!--
+      Tablet and Mobile only - see the media query in styles.css.
+
+      Those two layouts are one continuous scrolling page, so the composition
+      runs under the transparent Header exactly as the Privacy page did. This
+      is the same fix: a live copy of the page background, clipped to the
+      Header band and held in register with the real one by main.js, so what
+      covers the passing content is the background rather than a colour.
+
+      Desktop and Laptop hide it. There the states are composed inside the
+      sticky stage and nothing ever passes beneath the Header.
+    -->
+    <div class="site-header__bg" aria-hidden="true">
+      <div class="page-bg">
+        <div class="page-bg__stars"></div>
+        <div class="page-bg__fade"></div>
+        <div class="page-bg__glow"></div>
+      </div>
+    </div>
+
     <div class="site-header__inner">
       <a
         class="site-header__logo"
@@ -173,14 +240,17 @@
               </div>
 
               <div class="hero__media">
-                <img
-                  src="assets/img/Hero Image.png"
-                  width="412"
-                  height="412"
-                  alt="3D illustration of North Stardust's dinosaur mascot character"
-                  decoding="async"
-                  fetchpriority="high"
-                >
+                <picture>
+                  <source srcset="assets/img/Hero%20Image.avif" type="image/avif">
+                  <img
+                    src="assets/img/Hero Image.png"
+                    width="412"
+                    height="412"
+                    alt="3D illustration of North Stardust's dinosaur mascot character"
+                    decoding="async"
+                    fetchpriority="high"
+                  >
+                </picture>
               </div>
             </div>
           </div>
@@ -279,14 +349,17 @@ Uncover opportunities.</p>
                 <p data-content="home.studio.works.ip.message">
                   A new IP is emerging around Crocky Ka Rio, built around a unique universe of heroes, rich backstories and an inclusive world.
                 </p>
-                <img
-                  src="assets/img/Original Worlds.png"
-                  width="352"
-                  height="352"
-                  alt="Original Worlds artwork"
-                  loading="lazy"
-                  decoding="async"
-                >
+                <picture>
+                  <source srcset="assets/img/Original%20Worlds.avif" type="image/avif">
+                  <img
+                    src="assets/img/Original Worlds.png"
+                    width="352"
+                    height="352"
+                    alt="Original Worlds artwork"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                </picture>
               </article>
             </div>
 
@@ -325,15 +398,18 @@ Uncover opportunities.</p>
         >
           <div class="landing-shell founder">
             <div class="founder__media">
-              <img
-                class="founder__portrait"
-                src="assets/img/founder-rounded.png"
-                width="332"
-                height="456"
-                alt="Portrait of Athanasios Zagkliveris"
-                loading="lazy"
-                decoding="async"
-              >
+              <picture>
+                <source srcset="assets/img/founder-rounded.avif" type="image/avif">
+                <img
+                  class="founder__portrait"
+                  src="assets/img/founder-rounded.png"
+                  width="332"
+                  height="456"
+                  alt="Portrait of Athanasios Zagkliveris"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </picture>
 
               <ul class="founder__links founder__links--aside">
                 <li><a href="https://www.linkedin.com/in/athanasios-zagkliveris/" target="_blank" rel="noopener noreferrer">LINKEDIN</a></li>
@@ -416,14 +492,47 @@ Uncover opportunities.</p>
 
               <div class="field" data-field="message">
                 <label class="visually-hidden" for="message">Message</label>
-                <textarea id="message" name="message" placeholder="MESSAGE" required></textarea>
-                <p class="field__error" data-message-error role="status" aria-live="polite" hidden></p>
+                <!--
+                  maxlength is the no-JS floor. main.js drops it on boot and
+                  enforces the limit itself, so that at 500 the next keystroke
+                  replaces the last character instead of being refused.
+                -->
+                <textarea id="message" name="message" placeholder="MESSAGE" maxlength="500" aria-describedby="message-count" required></textarea>
               </div>
 
+              <!--
+                One slot, one message. The countdown sits here by default; a
+                validation error or a send status takes its place, and only
+                ever one of the two is seen. They are separate elements
+                because only the status should be announced - a live region
+                that also carried the countdown would speak every keystroke.
+
+                The status is never hidden and never removed. A live region has
+                to be sitting in the accessibility tree, empty, before its text
+                arrives: several screen readers say nothing at all when a region
+                appears and fills in the same moment. Empty it costs no height -
+                p carries no margin here - so hiding the countdown is enough to
+                give it the row.
+              -->
               <div class="contact-form__foot">
-                <p class="contact-form__status" role="status" aria-live="polite"></p>
-                <button class="btn contact-form__submit" type="submit">SUBMIT</button>
+                <div class="contact-form__note">
+                  <p class="contact-form__count" id="message-count" data-message-count>500 characters left</p>
+                  <p class="contact-form__status" id="form-note" role="status" aria-live="polite"></p>
+                </div>
+                <button class="btn contact-form__submit" type="submit" aria-describedby="form-privacy-note">SUBMIT</button>
               </div>
+
+              <!--
+                Acknowledgement, not consent. There is no checkbox and nothing
+                to tick: the form is sent on legitimate interests, and a
+                consent box here would misdescribe the basis it actually runs
+                on. This is the Article 13 notice, given at the point of
+                collection, one click from the full policy.
+              -->
+              <p class="contact-form__privacy" id="form-privacy-note">
+                By submitting this form, you acknowledge our
+                <a href="privacy.html">Privacy Policy</a>.
+              </p>
             </form>
           </div>
         </section>
@@ -450,6 +559,8 @@ Uncover opportunities.</p>
             >
               LINKEDIN
             </a>
+
+            <a class="site-footer__privacy" href="privacy.html">Privacy Policy</a>
 
             <p class="site-footer__legal" data-content="footer.copyright">© 2026 North Stardust Studio</p>
           </div>

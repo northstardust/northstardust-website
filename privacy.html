@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<!--
+  North Stardust — privacy.html
+
+  A separate page on the publishing.html pattern: same background system,
+  Header and Footer treatment, with a long-form reading column instead of a
+  centred title. It is NOT a Home state.
+
+  No analytics on this page. A privacy notice should not be one of the things
+  that has to describe itself.
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>North Stardust — Privacy Policy</title>
+  <meta name="description" content="What North Stardust collects, why, how long it is kept, and the rights you have over it.">
+  <link rel="canonical" href="https://northstardust.studio/privacy.html">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="author" content="Athanasios Zagkliveris">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="North Stardust">
+  <meta property="og:url" content="https://northstardust.studio/privacy.html">
+  <meta property="og:title" content="North Stardust — Privacy Policy">
+  <meta property="og:description" content="What North Stardust collects, why, how long it is kept, and the rights you have over it.">
+  <meta property="og:image" content="https://northstardust.studio/assets/img/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+  <!--
+    Only the faces this page actually renders. The policy itself is set in
+    Inter throughout, so Cormorant - the display face everywhere else - is
+    never called for here. Preloading is a hint, not a dependency: a face left
+    out still loads if something later asks for it.
+  -->
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/spectral-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-500.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-600.woff2" crossorigin>
+
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
+  <script src="main.js" defer></script>
+</head>
+
+<body class="publishing-body legal-body">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <div class="page-bg" aria-hidden="true">
+    <div class="page-bg__stars"></div>
+    <div class="page-bg__fade"></div>
+    <div class="page-bg__glow"></div>
+  </div>
+
+  <header class="site-header" data-site-header>
+
+    <!--
+      A live copy of the page background, clipped to the Header band and shifted
+      up by exactly the amount the real one has scrolled. Because it is the same
+      markup on the same animation timeline, it shows precisely what sits behind
+      the Header at any scroll position - stars at the top, the glow near the
+      bottom - so the band reads as background rather than as a slab laid on it.
+      main.js keeps the offset in step.
+    -->
+    <div class="site-header__bg" aria-hidden="true">
+      <div class="page-bg">
+        <div class="page-bg__stars"></div>
+        <div class="page-bg__fade"></div>
+        <div class="page-bg__glow"></div>
+      </div>
+    </div>
+
+    <div class="site-header__inner">
+      <a
+        class="site-header__logo"
+        href="index.html#hero"
+        aria-label="North Stardust — Home"
+      >
+        <picture>
+          <source
+            srcset="assets/img/logo-single-line.svg"
+            media="(max-width: 767px)"
+            width="240"
+            height="60"
+          >
+          <img
+            src="assets/img/logo-double-line.svg"
+            width="240"
+            height="100"
+            alt="North Stardust"
+            decoding="async"
+          >
+        </picture>
+      </a>
+
+      <nav class="site-header__nav" aria-label="Primary navigation">
+        <a href="index.html#studio">STUDIO</a>
+        <a href="publishing.html">PUBLISHING</a>
+        <a href="index.html#founder">ABOUT</a>
+        <a class="contact-link" href="index.html#contact">CONTACT</a>
+      </nav>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-navigation"
+        aria-label="Open navigation"
+        data-menu-toggle
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+
+      <nav
+        id="mobile-navigation"
+        class="mobile-nav"
+        aria-label="Mobile navigation"
+        hidden
+      >
+        <a href="index.html#studio">STUDIO</a>
+        <a href="publishing.html">PUBLISHING</a>
+        <a href="index.html#founder">ABOUT</a>
+        <a href="index.html#contact">CONTACT</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="legal-page" tabindex="-1">
+    <article class="legal">
+      <h1 class="legal__title">Privacy Policy</h1>
+      <p class="legal__stamp">Last updated 26 August 2026</p>
+
+      <p class="legal__lede">
+        This page explains what North Stardust collects when you visit this
+        website or write to us, why, how long we keep it, and what you can ask
+        us to do about it. It covers this website only.
+      </p>
+
+      <h2>Who we are</h2>
+      <p>
+        North Stardust is an independent creative studio operated by
+        Athanasios Zagkliveris in Greece. We are the data controller for the
+        personal data described here.
+      </p>
+      <p>
+        For anything about this policy, or to exercise any of the rights below,
+        write to
+        <a href="mailto:northstardust.studio@gmail.com">northstardust.studio@gmail.com</a>.
+      </p>
+
+      <h2>When you use the contact form</h2>
+      <p>
+        The form asks for your <strong>first name</strong>, <strong>last
+        name</strong>, <strong>email address</strong> and your
+        <strong>message</strong>. It asks for nothing else, and nothing is
+        pre-filled from anywhere.
+      </p>
+      <p>
+        What you send is checked by our hosting provider and passed straight to
+        an email delivery service, which sends it on to our inbox as an email.
+        It is not saved to a database on this website. We keep the message in
+        our inbox. The delivery service also holds the message and its delivery
+        record for a short period before removing them.
+        Your address is set as the reply-to address so we can answer you. Your
+        message is not published, sold, or used for marketing, and we do not
+        add you to any mailing list.
+      </p>
+      <p>
+        Please do not send sensitive personal information through the contact
+        form.
+      </p>
+      <p>
+        <strong>Why we may do this:</strong> our legitimate interest in reading
+        and replying to people who choose to contact us
+        (Article 6(1)(f) GDPR). Where your message is about possible work
+        together, we may also rely on taking steps at your request before
+        entering a contract (Article 6(1)(b)).
+      </p>
+      <p>
+        The form carries a hidden field that people never see and never fill
+        in. If it arrives filled in we treat the submission as automated and
+        discard it. Nothing about you is collected by it.
+      </p>
+
+      <h2>Analytics and session recording</h2>
+      <p>
+        The home page can load two third-party measurement tools.
+        <strong>Neither runs unless you agree to it.</strong> The first time you
+        visit we ask, and nothing is loaded until you answer.
+      </p>
+      <ul>
+        <li>
+          <strong>Google Analytics 4</strong>: how many people visit, which
+          pages they open, roughly where in the world they are (from the IP
+          address), and what device and browser they use.
+        </li>
+        <li>
+          <strong>Microsoft Clarity</strong>: the same kind of usage data,
+          plus <strong>session recordings and heatmaps</strong>: a replay that
+          reconstructs the pages as they appeared, together with the pointer
+          movements, clicks, scrolling and taps made during the visit. Clarity
+          masks the contents of form fields in every one of its modes, so what
+          you type into the contact form is not captured in a recording.
+        </li>
+      </ul>
+      <p>
+        Both set their own cookies or similar identifiers in your browser, and
+        both send what they collect to Google and Microsoft respectively, who
+        process it as our providers and under their own terms.
+      </p>
+      <p>
+        <strong>Why we may do this:</strong> your consent, which you give by
+        choosing Accept when we ask (Article 6(1)(a) GDPR). If you choose
+        Decline, neither tool is loaded and nothing about your visit is sent to
+        Google or Microsoft.
+      </p>
+      <p>
+        You can change your mind at any time, and it is no harder to withdraw
+        than it was to give. Withdrawing also deletes the Google Analytics and
+        Clarity identifiers this site can reach in your browser:
+        <button type="button" class="legal__choice" data-consent-reopen>
+          Change your analytics choice
+        </button>
+      </p>
+
+      <h2>Hosting and security</h2>
+      <p>
+        The site is hosted on Cloudflare Pages. Like any web host, Cloudflare
+        processes the technical details of each request, including your IP
+        address, the time, the page requested and your browser's user agent,
+        to serve the site, keep it available and protect it from attack and
+        abuse. This is our legitimate interest in running a working, secure
+        website (Article 6(1)(f)).
+      </p>
+
+      <h2>Cookies and similar technologies</h2>
+      <p>
+        <strong>The site's own code sets no cookies.</strong> It saves one
+        thing in your browser: your answer to the analytics question above,
+        so that we do not ask again on every page. It is never sent anywhere.
+        The site also loads no fonts, images or embedded content from other
+        companies: everything it needs, it serves itself.
+      </p>
+      <p>
+        If you accept analytics, the two tools above set cookies of their own.
+        Google Analytics sets cookies under this domain. You will see them
+        named <code>_ga</code> and <code>_ga_</code> followed by a code.
+        Microsoft Clarity sets its own identifiers. If you decline, none of them
+        are set, because neither tool is loaded. No other cookies are
+        intentionally set by the website.
+      </p>
+      <p>
+        You can block or delete them in your browser settings, and browser
+        tracking protection or an ad blocker will usually stop them loading at
+        all. Google also publishes a browser add-on that opts you out of Google
+        Analytics on every site.
+      </p>
+
+      <h2>Sending information outside the EEA</h2>
+      <p>
+        Our providers may process personal data outside the European Economic
+        Area, including in the United States. Where that happens, the transfer
+        relies on the European Commission's adequacy decision for the EU–U.S.
+        Data Privacy Framework, where the provider is certified under it, and
+        otherwise on standard contractual clauses approved by the European
+        Commission. For visitors in the United Kingdom, the equivalent UK
+        mechanisms apply.
+      </p>
+
+      <h2>How long we keep things</h2>
+      <ul>
+        <li>
+          <strong>Contact form messages:</strong> 12 months from your last
+          contact with us, then deleted.
+        </li>
+        <li>
+          <strong>With our email delivery provider:</strong> the message and its
+          delivery record are held for that provider's own retention window,
+          30 days under its standard plans, and are then deleted. We do not
+          extend it.
+        </li>
+        <li>
+          <strong>Analytics and session recordings:</strong> Microsoft deletes
+          Clarity recordings after 30 days and its heatmap data after 9 months.
+          Google Analytics keeps event and user level data for the period set on
+          our property, which can be between 2 and 14 months. We do not keep our
+          own copy of either.
+        </li>
+        <li>
+          <strong>Hosting logs:</strong> for as long as our host retains them
+          for security and reliability, which is set by them rather than by us.
+          We do not keep our own copy.
+        </li>
+      </ul>
+
+      <h2>Who else sees your information</h2>
+      <p>
+        Only the providers that make the site work: our hosting provider, our
+        email delivery provider, our email inbox provider, and the two
+        analytics providers named above. We do not sell personal data and we do
+        not share it for anyone else's marketing.
+      </p>
+      <p>
+        We may disclose information if the law requires it, or to establish or
+        defend a legal claim.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        You have the following rights over your personal data:
+      </p>
+      <ul>
+        <li>access it and receive a copy;</li>
+        <li>correct it if it is wrong or incomplete;</li>
+        <li>ask us to delete it;</li>
+        <li>ask us to limit how we use it while a question about it is resolved;</li>
+        <li>
+          object to how we use it where we rely on legitimate interests;
+        </li>
+        <li>
+          withdraw your consent to analytics at any time, which takes effect
+          immediately and costs you nothing;
+        </li>
+        <li>
+          receive it in a portable format, where that right applies.
+        </li>
+      </ul>
+      <p>
+        Write to
+        <a href="mailto:northstardust.studio@gmail.com">northstardust.studio@gmail.com</a>
+        and we will respond within one month. There is normally no charge.
+      </p>
+      <p>
+        We make no automated decisions about you and do no profiling. We do not
+        ask for special category data, and the site is not directed at
+        children.
+      </p>
+
+      <h2>Complaints</h2>
+      <p>
+        If you think we have handled your personal data badly, please tell us
+        first. We would rather put it right. You can also complain to the
+        Hellenic Data Protection Authority
+        (<a href="https://www.dpa.gr/en" target="_blank" rel="noopener noreferrer">dpa.gr</a>),
+        or to the supervisory authority where you live or work.
+      </p>
+      <p>
+        If you are in the United Kingdom, you have the equivalent rights under
+        the UK GDPR and may complain to the Information Commissioner's Office
+        (<a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">ico.org.uk</a>).
+      </p>
+
+      <h2>Links to other sites</h2>
+      <p>
+        This site links to LinkedIn and ArtStation. Once you follow a link you
+        are on someone else's site, under their privacy policy, not this one.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        If we change what we collect or why, we will update this page and move
+        the date at the top. There is no archive of earlier versions.
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer publishing-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__logo" aria-hidden="true">
+        <img
+          src="assets/img/logo-single-line.svg"
+          width="240"
+          height="60"
+          alt=""
+          decoding="async"
+        >
+      </div>
+
+      <a
+        class="site-footer__linkedin"
+        href="https://www.linkedin.com/company/northstardust"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LINKEDIN
+      </a>
+
+      <a class="site-footer__privacy" href="privacy.html" aria-current="page">Privacy Policy</a>
+
+      <p class="site-footer__legal" data-content="footer.copyright">© 2026 North Stardust Studio</p>
+    </div>
+  </footer>
+</body>
+</html>

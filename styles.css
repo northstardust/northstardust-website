@@ -695,6 +695,26 @@ a {
   letter-spacing: 0.03em;
 }
 
+
+/*
+  AVIF wrappers, made invisible to layout.
+
+  Three content images are served as AVIF with a PNG behind them, which means
+  each <img> gained a <picture> parent. Several layouts here set
+  display: contents on the image's container and then place the <img> itself as
+  a grid or flex item - .studio-work--ip and .founder__media both do. Left
+  alone, the <picture> would become that item and every rule targeting the
+  image would be aiming at the wrong box.
+
+  display: contents on the wrapper puts the <img> back where it was, so none of
+  those rules had to change. The Header lockup is deliberately not included: its
+  <picture> is a flex item there and is doing its job.
+*/
+.hero__media picture,
+.studio-work--ip picture,
+.founder__media picture {
+  display: contents;
+}
 .hero__media {
   display: flex;
   justify-content: center;
@@ -1018,8 +1038,19 @@ a {
 }
 
 /*
-  Fixed by the author, not the reader: no handle, no scrollbar. main.js grows
-  the box a line at a time as the text runs past the bottom.
+  Fixed by the author, not the reader: no drag handle and no visible scrollbar.
+  main.js grows the box a line at a time as the text runs past the bottom, and
+  stops it at whichever comes first - the 300px cap here, or the point where
+  the state would otherwise push the Footer past the bottom of the stage.
+
+  What is hidden is the scrollbar, not the scrolling. Once the box has stopped
+  growing the text can still run past it, and the reader has to be able to get
+  back to it - by wheel, by trackpad, by dragging a selection or by walking the
+  caret. So the box stays a scroll container and only its scrollbar is taken
+  out of the paint, in the three dialects that need telling separately.
+
+  Nothing here reserves a gutter, so the text measures the same width as it did
+  when this was overflow:hidden and the growth calculation is unaffected.
 */
 .field textarea {
   height: 120px;
@@ -1029,17 +1060,19 @@ a {
   padding: 0.65rem 1rem;
   line-height: 1.4;
   resize: none;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /*
+    The page snaps between states. Without this, reaching the end of the
+    message hands the wheel straight to the page and throws the reader out of
+    the state they are typing in.
+  */
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Sits under the box it belongs to. */
-.field__error {
-  margin-top: 8px;
-  color: var(--field-error);
-  font: 400 14px/1.3 var(--font-sans);
-}
-
-.field__error[hidden] {
+.field textarea::-webkit-scrollbar {
   display: none;
 }
 
@@ -1082,6 +1115,79 @@ a {
   color: var(--field-error);
 }
 
+/*
+  Autofill.
+
+  A field the browser fills for the reader - the Email, usually - is painted by
+  the browser itself: its own light background and its own near-black text,
+  both marked !important in the UA stylesheet. That is why the Email came out
+  as a pale box while the fields beside it stayed transparent.
+
+  The text colour is reachable, because that rule sets `color` and not
+  `-webkit-text-fill-color`, which wins over it.
+
+  The background is not reachable at any specificity. It is, however,
+  animatable, so a transition long enough never to arrive leaves the field
+  painted with the background this stylesheet gave it. The other three
+  transitions are repeated here because `transition` is one property and
+  naming it again replaces the lot.
+
+  Split into two rule sets on purpose: an engine that does not recognise one of
+  these selectors would drop the whole list if they shared a block, and the
+  standard `:autofill` and the WebKit-prefixed form are not understood by the
+  same set of browsers.
+*/
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--peach);
+  caret-color: var(--peach);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 100000s 100000s;
+}
+
+.field input:autofill,
+.field input:autofill:hover,
+.field input:autofill:focus,
+.field textarea:autofill {
+  -webkit-text-fill-color: var(--peach);
+  caret-color: var(--peach);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 100000s 100000s;
+}
+
+/*
+  An autofilled field is a filled field, so it takes the filled text colour;
+  if it then fails validation it takes the error colour, exactly as a field
+  the reader typed into would.
+*/
+.field.is-filled input:-webkit-autofill {
+  -webkit-text-fill-color: var(--ivory);
+  caret-color: var(--ivory);
+}
+
+.field.is-filled input:autofill {
+  -webkit-text-fill-color: var(--ivory);
+  caret-color: var(--ivory);
+}
+
+.field.is-error input:-webkit-autofill {
+  -webkit-text-fill-color: var(--field-error);
+  caret-color: var(--field-error);
+}
+
+.field.is-error input:autofill {
+  -webkit-text-fill-color: var(--field-error);
+  caret-color: var(--field-error);
+}
+
 .contact-form__foot {
   display: flex;
   align-items: center;
@@ -1089,10 +1195,54 @@ a {
   gap: 1rem;
 }
 
-.contact-form__status {
+/*
+  The one place the form ever speaks: countdown by default, a validation error
+  or a send status in its stead. It holds the left of the Submit row, and both
+  of its children sit on the same line and the same left edge, so swapping one
+  for the other moves nothing.
+*/
+.contact-form__note {
   flex: 1;
+  min-width: 0;
+  /*
+    Indented from the message box's left edge rather than flush with it. Mobile
+    drops this - see the Mobile block - because the slot has no width to spare
+    there.
+  */
+  margin-left: 24px;
+}
+
+.contact-form__count,
+.contact-form__status {
   color: var(--ivory);
   font: 400 14px/1.3 var(--font-sans);
+}
+
+.contact-form__count {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* The last 50, then nothing left to give. */
+.contact-form__count[data-state="low"] {
+  color: var(--gold-light);
+  opacity: 1;
+}
+
+.contact-form__count[data-state="full"] {
+  color: var(--field-error);
+  opacity: 1;
+}
+
+/*
+  Only the countdown is ever hidden. The status is a live region and has to
+  stay in the accessibility tree to be announced reliably - display:none, or a
+  :empty rule, would take it straight back out. Empty it draws nothing and
+  measures nothing, so no rule is needed to get it out of the way.
+*/
+.contact-form__count[hidden] {
+  display: none;
 }
 
 .contact-form__status[data-state="error"] {
@@ -1103,6 +1253,160 @@ a {
   color: var(--gold-light);
 }
 
+/*
+  The Article 13 notice, given where the data is collected. Deliberately quiet:
+  it is a pointer, not a request, and there is nothing here to agree to.
+
+  Aligned to the right so it sits under Submit rather than under the message
+  slot, and set 24px clear of the button so it reads as a footnote to the form
+  rather than as part of the Submit row.
+*/
+.contact-form__privacy {
+  /*
+    No margin: the form is a flex column with a 24px row-gap, which already
+    puts exactly 24px between Submit and this line. Adding a margin on top of
+    it made the gap 48px.
+  */
+  text-align: right;
+  color: var(--ivory);
+  opacity: 0.75;
+  font: 400 14px/1.5 var(--font-sans);
+}
+
+.contact-form__privacy a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.contact-form__privacy a:hover,
+.contact-form__privacy a:focus-visible {
+  color: var(--gold-light);
+}
+
+
+/* ==========================================================
+   ANALYTICS CONSENT
+
+   Built by main.js, on any page that has something to ask. Nothing here is
+   loaded before the visitor answers, which is the point - see the module in
+   main.js for why the tags cannot live in the markup.
+   ========================================================== */
+
+/*
+  Anchored to the bottom of the viewport rather than the document, so the
+  question is in front of the visitor wherever they are on a long page. The
+  gold hairline is the same rule the states use between sections; the band
+  itself is Midnight so it reads as part of the site rather than a browser
+  chrome bar bolted on.
+*/
+.consent {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 1200;
+  background: var(--midnight);
+  border-top: 2px solid var(--gold-light);
+}
+
+/*
+  The banner takes focus when it opens so keyboard visitors arrive at the
+  question. It is a container, not a control, so it does not draw the focus ring
+  a control would - that ring belongs to the two buttons, equally, once someone
+  Tabs to one of them.
+*/
+.consent:focus {
+  outline: none;
+}
+
+.consent__inner {
+  width: min(100%, var(--content-width));
+  margin-inline: auto;
+  padding: 20px var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.consent__copy {
+  max-width: 68ch;
+}
+
+.consent__title {
+  color: var(--gold-light);
+  font: 600 16px/1.3 var(--font-sans);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.consent__text {
+  margin-top: 8px;
+  color: var(--ivory);
+  font: 400 14px/1.6 var(--font-sans);
+}
+
+/*
+  The only coloured thing in the sentence, so the eye finds it without the rule
+  being drawn all the time. Pointer layouts get the underline on hover; touch
+  has no hover to reveal it, so below 1200px it is drawn from the start - see
+  the media query further down.
+*/
+.consent__text a {
+  color: var(--gold-light);
+  text-decoration: none;
+}
+
+.consent__text a:hover,
+.consent__text a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.consent__actions {
+  display: flex;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+/*
+  Decline and Accept are deliberately identical. Consent is only freely given
+  when refusing costs no more than agreeing, so neither is dressed as the
+  obvious one - no primary colour on one and a faint outline on the other.
+*/
+.consent__btn {
+  min-width: 116px;
+}
+
+/*
+  Touch has no hover to reveal the underline with, so below 1200px the link is
+  drawn underlined from the start. Without this it is a colour change alone,
+  which is not enough on its own to say "this is a link".
+*/
+@media (max-width: 1199px) {
+  .consent__text a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+}
+
+@media (max-width: 767px) {
+  .consent__inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px var(--gutter);
+  }
+
+  .consent__actions {
+    justify-content: stretch;
+  }
+
+  .consent__btn {
+    flex: 1;
+  }
+}
 /* ==========================================================
    BUTTONS
    ========================================================== */
@@ -1141,7 +1445,11 @@ a {
   margin-inline: auto;
   padding-inline: var(--gutter);
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  /*
+    Four equal shares, one per item, so the row is spaced by its own content
+    rather than by two flexible ends pushing the middle pair together.
+  */
+  grid-template-columns: repeat(4, 1fr);
   align-items: center;
   gap: 1rem;
 }
@@ -1160,6 +1468,33 @@ a {
 
 .site-footer__linkedin {
   justify-self: center;
+}
+
+/* Outer items hold the edges; the inner two centre in their own share. */
+.site-footer__legal {
+  justify-self: end;
+}
+
+/*
+  Sits between LINKEDIN and the copyright. Same type as its neighbours so the
+  row reads as one line, but it keeps its own capitals: it is the name of a
+  document, not a label like LINKEDIN.
+*/
+.site-footer__privacy {
+  justify-self: center;
+  display: inline-block;
+  color: var(--peach);
+  font: 500 14px/1.2 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.site-footer__privacy:hover,
+.site-footer__privacy:focus-visible {
+  color: var(--gold-light);
+  text-decoration: underline;
+  transform: scale(1.06);
 }
 
 .site-footer__legal {
@@ -1250,13 +1585,18 @@ a {
     The Footer holds the bottom of the stage while the message box grows.
 
     The separator carries the 64px of clear space above and below its rule
-    inside its own box rather than taking it from the stage's row gap, and
-    that box is the only item here allowed to shrink. So the space either side
-    of the separator is what gives way as Contact gets taller, and the Founder,
+    inside its own box rather than taking it from the canvas row gap, and that
+    box is the only item here allowed to shrink. So the space either side of
+    the separator is what gives way as Contact gets taller, and the Founder,
     the Contact block and the Footer all stay where they are.
+
+    Capping the canvas at the stage height is what makes that shrink happen at
+    all: the canvas is height:auto everywhere else, and a flex container that
+    grows with its content never has the free-space deficit flex-shrink needs.
   */
-  :root[data-landing-step="6"] .landing-stage {
+  :root[data-landing-step="6"] .stage-canvas {
     row-gap: 0;
+    max-height: 100%;
   }
 
   :root[data-landing-step="6"] .stage-line--a {
@@ -1452,6 +1792,362 @@ a {
 }
 
 /* ==========================================================
+   HEADER BACKDROP
+   index.html (Tablet and Mobile) and privacy.html
+
+   The Header is sticky and transparent. That is right wherever nothing passes
+   beneath it - the Desktop and Laptop states are composed inside the sticky
+   stage, and Publishing is a single centred line - but Tablet, Mobile and the
+   Privacy page are all one continuous scroll, and there the content ran under
+   the Header and stayed legible through it.
+
+   A flat band would hide it without matching it. The background is a starfield
+   at the top, plain Midnight through the middle and the blue glow near the
+   bottom, so any single colour is wrong at both ends of the scroll.
+
+   So the band is not a colour. It is a live copy of the page background, held
+   in register with the real one - main.js writes the real one's offset and
+   height into --bg-top and --bg-height, and the copy is positioned by them.
+   Both run the same star drift on the same timeline, so they stay in step
+   without being told to.
+
+   The wrapper clips the copy to the Header band and masks the last 32px to
+   nothing, so content disappears under a band that reads as background and the
+   edge is a fade rather than a rectangle.
+   ========================================================== */
+
+/*
+  Opaque over everything the Header draws, then out to nothing.
+
+  --band-solid is measured by main.js: the bottom of the lowest thing the
+  Header paints, plus 2px. The band is that much again plus a 24px tail, and
+  the mask holds full opacity for all of the first part and falls linearly to
+  nothing across the second. So the lockup and the nav always sit on solid
+  background, and the band ends as background rather than as an edge.
+
+  The tail is why the band is not simply the Header's height. At Tablet the
+  lockup fills the Header exactly, leaving nowhere inside it for a fade; the
+  band reaches past the Header instead, which is the only place the fade can
+  go without thinning the ground under the logo.
+*/
+.site-header__bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height:
+    calc(
+      var(--band-solid, calc(var(--header-height) * 0.75)) + 24px
+    );
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 1) 0,
+      rgb(0 0 0 / 1) calc(100% - 24px),
+      rgb(0 0 0 / 0) 100%
+    );
+  mask-image:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 1) 0,
+      rgb(0 0 0 / 1) calc(100% - 24px),
+      rgb(0 0 0 / 0) 100%
+    );
+}
+
+/*
+  The copy is laid out in the Header's coordinates, which sit at the top of the
+  viewport, so --bg-top carries the real background's viewport offset - a
+  negative number once the page has scrolled. Before main.js runs, the fallback
+  puts it at 0, which is exactly right at the top of the page.
+*/
+.site-header__bg .page-bg {
+  position: absolute;
+  top: var(--bg-top, 0px);
+  left: 0;
+  width: 100%;
+  height: var(--bg-height, 100svh);
+  inset-inline: 0;
+}
+
+/*
+  Home only, and only where the states are composed inside the sticky stage.
+  Nothing passes under the Header there, so the band would cover the top of the
+  composition for no reason. The Privacy page keeps it at every width, which is
+  why this is scoped away from .legal-body rather than applied to the Header
+  outright.
+*/
+@media (min-width: 1200px) {
+  body:not(.legal-body) .site-header__bg {
+    display: none;
+  }
+}
+
+/*
+  Nothing to hide with JavaScript off: the copy cannot be positioned, so the
+  Header goes back to being transparent rather than showing a band stuck at the
+  top of the document.
+*/
+:root:not(.js) .site-header__bg {
+  display: none;
+}
+
+/* ==========================================================
+   PRIVACY POLICY PAGE
+   privacy.html
+
+   Reuses the publishing.html shell - .publishing-body for the column, the
+   shared Header and .publishing-footer. Only the reading column below is new,
+   and every selector is scoped under .legal or .legal-body so nothing here can
+   reach the Home states or the Publishing page.
+   ========================================================== */
+
+.legal-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 48px var(--gutter) 96px;
+}
+
+/*
+  A measure, not a container width. Long-form prose is read one line at a time,
+  so this is set by the line length that stays comfortable rather than by the
+  1200px the composed states use. At 18px Inter this lands near 70 characters.
+*/
+.legal {
+  width: 100%;
+  max-width: 660px;
+  /*
+    Inter throughout. The Home states pair three faces because each has a job
+    there - the brand lockup, the composed headlines, the running text. A legal
+    page has one job, reading, and one voice reads better than three.
+  */
+  font-family: var(--font-sans);
+}
+
+.legal__title {
+  color: var(--gold-light);
+  font: 600 40px/1.15 var(--font-sans);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Sits under the title as a caption, not as another heading. */
+/* Typed as p.<class> so the generic ".legal p" rule below cannot outrank it. */
+.legal p.legal__stamp {
+  margin-top: 14px;
+  color: var(--peach);
+  opacity: 0.7;
+  font: 400 13px/1.4 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.legal p.legal__lede {
+  margin-top: 36px;
+  font-size: 20px;
+  line-height: 1.65;
+}
+
+.legal h2 {
+  margin-top: 52px;
+  color: var(--gold-light);
+  font: 600 22px/1.35 var(--font-sans);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.legal p,
+.legal ul {
+  margin-top: 18px;
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+.legal ul {
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
+.legal li {
+  margin-top: 10px;
+}
+
+.legal li::marker {
+  color: var(--gold-dark);
+}
+
+.legal strong {
+  font-weight: 600;
+  color: var(--peach);
+}
+
+/* Cookie names read as values, not prose. */
+.legal code {
+  font-family: var(--font-sans);
+  font-size: 0.94em;
+  letter-spacing: 0.02em;
+  color: var(--peach);
+}
+
+/*
+  Underlined rather than coloured alone: at this size a colour shift on its own
+  is a weak signal, and these links matter - they are how someone acts on the
+  page.
+*/
+.legal a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.legal a:hover,
+.legal a:focus-visible {
+  color: var(--peach);
+}
+
+/*
+  The control that reopens the analytics question. A button, not a link,
+  because it acts on this page rather than going anywhere - and typed to look
+  like the prose around it so it reads as part of the sentence it sits in.
+*/
+.legal__choice {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+}
+
+.legal__choice:hover,
+.legal__choice:focus-visible {
+  color: var(--peach);
+}
+
+@media (max-width: 767px) {
+  .legal-page {
+    padding: 32px var(--gutter) 64px;
+  }
+
+  .legal__title {
+    font-size: 30px;
+  }
+
+  .legal p.legal__lede {
+    margin-top: 28px;
+    font-size: 18px;
+  }
+
+  .legal h2 {
+    margin-top: 44px;
+    font-size: 20px;
+  }
+
+  .legal p,
+  .legal ul {
+    font-size: 17px;
+  }
+}
+
+/* ==========================================================
+   404
+   404.html
+
+   No Header, no Footer: the page has one job. The body still carries the
+   background system, so it reads as part of the site rather than as a server
+   error page.
+   ========================================================== */
+
+.notfound-body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.notfound-page {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 48px var(--gutter);
+}
+
+/* The 48px rhythm the block is built on. */
+.notfound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  text-align: center;
+}
+
+.notfound__code {
+  color: var(--gold-light);
+  font: 400 96px/1 var(--font-sans);
+}
+
+/* Message and description sit 24px apart inside the 48px rhythm. */
+.notfound__message {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/*
+  Weight 400: the project ships Cormorant Garamond in 400 only, by choice.
+  Asking for 600 would have the browser synthesise a bold, which is a worse
+  letterform than the real one at 64px.
+*/
+.notfound__title {
+  color: var(--gold-light);
+  font: 400 64px/1.1 var(--font-brand);
+  text-wrap: balance;
+}
+
+.notfound__text {
+  color: var(--ivory);
+  font: 400 20px/1.5 var(--font-serif);
+  letter-spacing: 0.05em;
+  text-wrap: balance;
+}
+
+/* .btn already carries the pill, the peach and the Midnight label. */
+.notfound__home {
+  width: 120px;
+}
+
+/*
+  Scaled for narrow screens. The proportions are the same: the code leads, the
+  message carries, the description follows it by a smaller step.
+*/
+@media (max-width: 767px) {
+  .notfound {
+    gap: 36px;
+  }
+
+  .notfound__code {
+    font-size: 64px;
+  }
+
+  .notfound__title {
+    font-size: 36px;
+  }
+
+  .notfound__text {
+    font-size: 17px;
+  }
+}
+
+/* ==========================================================
    TABLET / MOBILE
    ========================================================== */
 
@@ -1547,8 +2243,23 @@ a {
     display: block;
     min-height: 0;
     padding-block: 0;
-    /* Lands as Header, rule, then the section - not under the Header. */
-    scroll-margin-top: var(--header-height);
+    /*
+      Lands the section's rule exactly where the band stops covering.
+
+      The rule is the section's own top edge, and the 24px canvas gap sits
+      directly above it, so whatever precedes the section ends 24px higher. Put
+      the rule at the band's full height and that 24px lands inside the band's
+      opaque part - the tail of the previous section goes under the solid
+      region rather than showing above the rule.
+
+      Any larger offset pushes the previous section back into view; any smaller
+      one starts hiding the rule. This is the one value that shows the rule and
+      nothing before it.
+    */
+    scroll-margin-top:
+      calc(
+        var(--band-solid, calc(var(--header-height) * 0.75)) + 24px
+      );
   }
 
   #compass::before,
@@ -1700,6 +2411,25 @@ a {
   .stage-footer .site-footer__inner {
     height: auto;
   }
+
+  /* ---- Footer ---- */
+  /*
+    The compass alone from Tablet down. The lockup is one SVG, icon then
+    wordmark, with the icon occupying exactly the left quarter of its 1024x256
+    viewBox - so holding the box to the icon's width and clipping shows the
+    mark on its own, without a second asset to keep in step with the first.
+  */
+  .site-footer__logo {
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+  }
+
+  .site-footer__logo img {
+    width: auto;
+    max-width: none;
+    height: 30px;
+  }
 }
 
 /* ==========================================================
@@ -1711,6 +2441,22 @@ a {
    ========================================================== */
 
 @media (min-width: 768px) and (max-width: 1199px) {
+
+  /* ---- Footer ---- */
+  /*
+    One line, sized by its content rather than into four equal shares. Equal
+    columns give the copyright about 185px here, which is not enough for it and
+    breaks it over two lines; letting each item take its own width and spreading
+    the row keeps all four on one line with the ends against the gutters.
+  */
+  .site-footer__inner {
+    grid-template-columns: repeat(4, auto);
+    justify-content: space-between;
+  }
+
+  .site-footer__legal {
+    white-space: nowrap;
+  }
   /* No hamburger here - the full navigation still fits. */
   .site-header__nav {
     display: flex;
@@ -1867,6 +2613,26 @@ a {
   .connect-card {
     margin-bottom: 24px;
   }
+
+  /*
+    Useful Tools: "into" belongs at the head of the second line, so the measure
+    is cut below the width of "Turn knowledge and creativity into" (311px) and
+    kept above "Turn knowledge and creativity" (270px).
+  */
+  .pillar:nth-of-type(2) .pillar__description {
+    max-width: 300px;
+  }
+
+  /*
+    Original Worlds: the copy is ranged right under a ranged-right title, and
+    was reaching 35px further left than the title above it. "Original Worlds"
+    sets 305px wide here, so holding the copy to the same measure starts the
+    block where the title starts. margin-left keeps it against the right edge.
+  */
+  .pillar:nth-of-type(3) .pillar__description {
+    max-width: 305px;
+    margin-left: auto;
+  }
 }
 
 /* ==========================================================
@@ -1886,15 +2652,19 @@ a {
     --body-size: 18px;
   }
 
+  /*
+    The countdown and the messages sit flush with the message box here. The
+    24px indent they carry elsewhere is width this slot cannot spare - Submit
+    already takes most of the row.
+  */
+  .contact-form__note {
+    margin-left: 0;
+  }
+
   /* ---- Header ---- */
   /* Half height, and the lockup no longer fills the Header band. */
   .site-header__logo img {
     height: calc(var(--header-height) / 2);
-  }
-
-  .site-footer__logo,
-  .site-footer__logo img {
-    height: 30px;
   }
 
   /* The menu icon needs room off the right edge. */
@@ -2034,10 +2804,23 @@ a {
     "to" at the head of the second line.
   */
   .studio-work--tool .studio-work__title {
-    grid-column: 1 / 3;
+    /*
+      Ends where the Original Worlds image below it ends, not where the
+      Navisworks cover beside it begins - the two right edges line up down the
+      column. The box is wider than the track, so it reaches back over the gap;
+      the longest line still starts within 3px of the image edge.
+    */
+    grid-column: 1;
     grid-row: 6;
     max-width: 150px;
     font-size: 20px;
+    /*
+      Ranged right so the title's ragged edge meets the cover beside it rather
+      than trailing away from it. Wider layouts keep their left alignment: the
+      cover is on the other side there, so the same edge would be the wrong one.
+    */
+    text-align: right;
+    justify-self: end;
   }
 
   /*
@@ -2167,15 +2950,29 @@ a {
     flex-direction: column;
   }
 
+  /* ---- Footer ---- */
+  /*
+    Two rows here, where four items will not sit across 375px: the mark,
+    LINKEDIN and Privacy Policy share the first, and the copyright takes the
+    second on its own. Tablet keeps all four on one line - with the compass in
+    place of the lockup there is room for them.
+  */
   .site-footer__inner {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+    align-items: center;
+    gap: 16px 20px;
     padding-block: 24px;
   }
 
   .site-footer__logo,
   .site-footer__linkedin,
+  .site-footer__privacy {
+    justify-self: center;
+  }
+
   .site-footer__legal {
+    grid-column: 1 / -1;
     justify-self: center;
   }
 }

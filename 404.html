@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<!--
+  North Stardust — 404.html
+
+  Cloudflare Pages serves this file, with a 404 status, for any path it cannot
+  match. Without it Pages falls back to index.html and answers 200, which tells
+  a visitor nothing and lets search engines index every mistyped URL as another
+  copy of the home page.
+
+  No Header and no Footer by design: there is one thing to do here, and the
+  page says it and offers it. The background system is kept so the page still
+  belongs to the site.
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>North Stardust — Page not found</title>
+  <meta name="description" content="That page does not exist on northstardust.studio.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="author" content="Athanasios Zagkliveris">
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/cormorant-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/spectral-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-500.woff2" crossorigin>
+
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+
+<body class="notfound-body">
+  <div class="page-bg" aria-hidden="true">
+    <div class="page-bg__stars"></div>
+    <div class="page-bg__fade"></div>
+    <div class="page-bg__glow"></div>
+  </div>
+
+  <main id="main-content" class="notfound-page">
+    <div class="notfound">
+      <p class="notfound__code">404</p>
+
+      <!--
+        Message and description are grouped so the 24px between them is a gap
+        of their own, inside the 48px rhythm the block is built on.
+      -->
+      <div class="notfound__message">
+        <h1 class="notfound__title">This page was not found.</h1>
+        <p class="notfound__text">The address may be mistyped, or the page may have moved.</p>
+      </div>
+
+      <a class="btn notfound__home" href="index.html">HOME</a>
+    </div>
+  </main>
+</body>
+</html>
