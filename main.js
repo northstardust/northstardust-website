@@ -347,7 +347,7 @@ JavaScript is deliberately limited to behaviour:
 
     /*
       Publishing intentionally has no interception.
-      It remains a normal document navigation to publishing.html.
+      It remains a normal document navigation to /publishing.
     */
   }
 
@@ -1745,7 +1745,7 @@ JavaScript is deliberately limited to behaviour:
     );
 
     const link = document.createElement("a");
-    link.href = "privacy.html";
+    link.href = "/privacy";
     link.textContent = "Privacy Policy";
 
     text.append(link, ".");
@@ -1953,8 +1953,8 @@ JavaScript is deliberately limited to behaviour:
     textReady.then(updateStageScale);
 
     /*
-      A hash arriving from another page (publishing.html links to
-      index.html#studio and friends) has to be resolved to a state. Otherwise
+      A hash arriving from another page (Publishing links to /#studio and
+      friends) has to be resolved to a state. Otherwise
       the browser lands on an absolutely positioned section inside the sticky
       stage and the step is whatever the scroll position happens to imply.
     */
@@ -1972,7 +1972,7 @@ JavaScript is deliberately limited to behaviour:
       And once more once the page has stopped changing height underneath it.
 
       Arriving from another page - Publishing and the Privacy Policy both link
-      to index.html#founder and friends - resolves the fragment straight away,
+      to /#founder and friends - resolves the fragment straight away,
       but two things still change the document's height afterwards: the web
       fonts replacing the fallback faces, and the Markdown copy replacing the
       fallback copy in the HTML. Either one moves the section, and the result

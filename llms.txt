@@ -5,8 +5,8 @@
 ## Pages
 
 - [Home](https://northstardust.studio/): The studio's hero statement and its focus — The Compass, The Studio and its work, The Horizon, and Athanasios Zagkliveris, Founder and Creative Director.
-- [Publishing](https://northstardust.studio/publishing.html): North Stardust's published work. Coming soon.
-- [Privacy Policy](https://northstardust.studio/privacy.html): How the site handles personal data — the contact form, analytics, and the rights a visitor has.
+- [Publishing](https://northstardust.studio/publishing): North Stardust's published work. Coming soon.
+- [Privacy Policy](https://northstardust.studio/privacy): How the site handles personal data — the contact form, analytics, and the rights a visitor has.
 
 ## Sections of the Home page
 

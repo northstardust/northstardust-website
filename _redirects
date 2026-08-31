@@ -1,0 +1,20 @@
+# Cloudflare Pages redirects. One rule per line: source, destination, status.
+# Evaluated before static assets are served.
+#
+# The Contact section is part of the home page, not a page of its own. It used
+# to be /contact.html, and that URL is still linked from elsewhere, so it has
+# to keep resolving - but as a real 301, not as the meta-refresh stub that used
+# to live here.
+#
+# The stub cost three hops and changed mechanism halfway through:
+#
+#   /contact.html -308-> /contact -200 <meta refresh>-> /index.html#contact -308-> /#contact
+#
+# Google follows a meta refresh as a redirect, so what it saw was a mixed
+# three-hop chain, and it reported the URL as a redirect error. These two rules
+# collapse that to a single permanent redirect.
+#
+# The fragment is for the reader, not the crawler: Google drops it and resolves
+# both rules to the home page, which is the correct destination either way.
+/contact.html   /#contact   301
+/contact        /#contact   301

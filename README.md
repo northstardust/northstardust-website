@@ -18,9 +18,21 @@ publishing.html    Publishing — "Coming soon…"
 privacy.html       Privacy Policy — one column, Inter only, no stage
 404.html           Not found — no header, no footer, no main.js; served by
                     Cloudflare Pages with a 404 status for any unmatched path
-contact.html       Redirect stub → index.html#contact (kept for old links/
-                    bookmarks; noindex, not part of the live site otherwise)
 ```
+
+**URLs have no `.html` on them.** Cloudflare Pages serves `publishing.html`
+at `/publishing` and answers `/publishing.html` with a 308 to it — the same
+for every page, including `/index.html` → `/`. So the file names above are
+not the addresses. Every canonical, `og:url`, sitemap entry and internal link
+uses the extensionless form, and **nothing in the site should ever advertise a
+`.html` URL**: pointing at one costs a redirect on every visit, and a
+canonical that points at a redirecting URL is one Google cannot resolve.
+
+That is not a style preference — it is what broke indexing. Both
+`publishing.html` and `privacy.html` declared a canonical of their own
+`.html` URL, which redirected straight back to the page, and the sitemap
+submitted the same redirecting URLs. Search Console reported redirect errors
+and indexed only the home page.
 
 Header and footer markup is duplicated across `index.html`,
 `publishing.html` and `privacy.html` — there is no templating layer in a
@@ -30,7 +42,7 @@ three.** `404.html` deliberately has neither and is not part of this.
 ## Files
 
 ```
-index.html · publishing.html · privacy.html · 404.html · contact.html
+index.html · publishing.html · privacy.html · 404.html
 styles.css        design tokens + every rule, in one file
 main.js           viewport profile, six-state tracking, header/mobile nav,
                    header band, analytics consent, copy sync, contact form
@@ -39,6 +51,10 @@ functions/_middleware.js   Cloudflare Pages Function — blocks public access
 functions/api/contact.js   Cloudflare Pages Function — POST /api/contact
 _headers          security headers, incl. the CSP (see "Changing an inline
                    script" below)
+_redirects        /contact.html and /contact → /#contact, 301. Contact is a
+                   section of the home page, not a page; these two URLs are
+                   kept resolving for old links. Replaced a meta-refresh stub
+                   that Google read as a broken three-hop chain.
 robots.txt · sitemap.xml · llms.txt · favicon.ico
 assets/
   fonts/          Cormorant 400, Spectral 400, Inter 400/500/600 (woff2)
@@ -221,7 +237,7 @@ Two consequences worth keeping in mind when editing:
   `ResizeObserver` on the background. A new Header element that paints
   outside the current selector list will not be measured at all.
 - **A fragment arriving from another page is applied twice.** Publishing and
-  the Privacy Policy link to `index.html#studio`, `#founder` and
+  the Privacy Policy link to `/#studio`, `/#founder` and
   `#contact`. `applyLocation()` resolves the fragment immediately — against
   whatever the band measured at that point — and `initialise()` re-applies it
   once everything the landing depends on has settled: the Markdown copy, the
@@ -240,7 +256,7 @@ Two consequences worth keeping in mind when editing:
   anchors scrolling during reflow and comparing offsets reads its own
   correction as the reader moving.
 
-**To check it after a Header or copy change:** land on `index.html#founder`
+**To check it after a Header or copy change:** land on `/#founder`
 from Publishing, note `window.scrollY`, then click ABOUT from inside the
 page and compare. They should be identical, with the section's top sitting at
 exactly `scroll-margin-top`.
@@ -642,6 +658,7 @@ them. Send the burst fast, and against the exact path.
 | Change the type scale or rhythm | Re-check `MIN_STAGE_SCALE` — it is derived from the body size |
 | Change anything the Header paints | Re-check `--band-solid` and where a cross-page link lands |
 | Add a page | Add it to `sitemap.xml`, `llms.txt`, and the footer Privacy link row |
+| Link to a page | Use the extensionless URL — never `.html` (see "Pages" above) |
 | Add or restyle a form field | Check it autofilled — see "Autofill" in `styles.css` |
 | Review the Privacy Policy | Annually, and whenever a processor or a data flow changes |
 | Confirm domain auto-renew | Annually |
