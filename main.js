@@ -1577,7 +1577,7 @@ JavaScript is deliberately limited to behaviour:
     it needs no consent of its own.
   */
   const CONSENT_KEY = "ns-analytics-consent";
-  const GA_ID = "G-KX169TMJTF";
+  const GA_ID = "G-KX1G9TMJTF";
   const CLARITY_ID = "y0ykuly2si";
 
   let analyticsLoaded = false;
